@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - default-deny-frontend.yaml
+  - default-deny-backend.yaml
+  - default-deny-data.yaml
+  - allow-dns-egress-frontend.yaml
+  - allow-dns-egress-backend.yaml
+  - allow-dns-egress-data.yaml
+  - allow-istio-egress-frontend.yaml
+  - allow-istio-egress-backend.yaml
+  - allow-istio-egress-data.yaml
+  - allow-egress-frontend-backend.yaml
+  - allow-frontend-backend.yaml
+  - allow-egress-backend-data.yaml
+  - allow-backend-data.yaml

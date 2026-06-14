@@ -1,0 +1,5 @@
+project_id                    = "replace-me"
+network                       = "replace-me"
+subnetwork                    = "replace-me"
+cluster_secondary_range_name  = "replace-me"
+services_secondary_range_name = "replace-me"

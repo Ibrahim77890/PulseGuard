@@ -1,0 +1,14 @@
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+*.tfplan
+*.log
+.idea/
+.vscode/
+Thumbs.db
+Desktop.ini
+
+docs/*
+PulseGuard_v2_AIOps_Project_Description.md
+PulseGuard_v2_AIOps_Project_Description.pdf

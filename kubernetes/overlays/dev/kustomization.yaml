@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Base setups
+  - ../../base/namespaces
+  - ../../base/rbac
+  - ../../base/networkpolicies
+  
+  # Service Mesh configurations
+  - ../../mesh/peerauthentication
+  # - ../../mesh/policies (uncomment when you have files here)
+
+# You can also add namespace/environment wide transformers here if needed
