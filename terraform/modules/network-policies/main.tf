@@ -1,4 +1,4 @@
-resource "kubernetes_network_policy" "default_deny" {
+resource "kubernetes_network_policy_v1" "default_deny" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -12,7 +12,7 @@ resource "kubernetes_network_policy" "default_deny" {
   }
 }
 
-resource "kubernetes_network_policy" "allow_dns" {
+resource "kubernetes_network_policy_v1" "allow_dns" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -46,7 +46,7 @@ resource "kubernetes_network_policy" "allow_dns" {
   }
 }
 
-resource "kubernetes_network_policy" "allow_mesh_control_plane" {
+resource "kubernetes_network_policy_v1" "allow_mesh_control_plane" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -80,7 +80,55 @@ resource "kubernetes_network_policy" "allow_mesh_control_plane" {
   }
 }
 
-resource "kubernetes_network_policy" "frontend_egress_to_backend" {
+resource "kubernetes_network_policy_v1" "allow_egress_to_observability" {
+  for_each = toset(var.namespaces)
+
+  metadata {
+    name      = "allow-egress-to-observability"
+    namespace = each.value
+  }
+
+  spec {
+    pod_selector {}
+    policy_types = ["Egress"]
+
+    egress {
+      to {
+        namespace_selector {
+          match_labels = {
+            "kubernetes.io/metadata.name" = var.observability_namespace
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_network_policy_v1" "allow_ingress_from_observability" {
+  for_each = toset(var.namespaces)
+
+  metadata {
+    name      = "allow-ingress-from-observability"
+    namespace = each.value
+  }
+
+  spec {
+    pod_selector {}
+    policy_types = ["Ingress"]
+
+    ingress {
+      from {
+        namespace_selector {
+          match_labels = {
+            "kubernetes.io/metadata.name" = var.observability_namespace
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_network_policy_v1" "frontend_egress_to_backend" {
   metadata {
     name      = "allow-egress-to-backend"
     namespace = "frontend"
@@ -102,7 +150,7 @@ resource "kubernetes_network_policy" "frontend_egress_to_backend" {
   }
 }
 
-resource "kubernetes_network_policy" "backend_ingress_from_frontend" {
+resource "kubernetes_network_policy_v1" "backend_ingress_from_frontend" {
   metadata {
     name      = "allow-ingress-from-frontend"
     namespace = "backend"
@@ -124,7 +172,7 @@ resource "kubernetes_network_policy" "backend_ingress_from_frontend" {
   }
 }
 
-resource "kubernetes_network_policy" "backend_egress_to_data" {
+resource "kubernetes_network_policy_v1" "backend_egress_to_data" {
   metadata {
     name      = "allow-egress-to-data"
     namespace = "backend"
@@ -146,7 +194,7 @@ resource "kubernetes_network_policy" "backend_egress_to_data" {
   }
 }
 
-resource "kubernetes_network_policy" "data_ingress_from_backend" {
+resource "kubernetes_network_policy_v1" "data_ingress_from_backend" {
   metadata {
     name      = "allow-ingress-from-backend"
     namespace = "data"

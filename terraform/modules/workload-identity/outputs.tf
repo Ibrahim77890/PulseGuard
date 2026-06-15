@@ -4,6 +4,6 @@ output "gsa_emails" {
 }
 
 output "ksa_names" {
-  value       = { for k, v in kubernetes_service_account.namespace_ksa : k => v.metadata[0].name }
+  value       = { for k, v in kubernetes_service_account_v1.namespace_ksa : k => v.metadata[0].name }
   description = "Map of namespace names to their KSA names."
 }

@@ -1,0 +1,66 @@
+grafana:
+  enabled: true
+  adminPassword: "${grafana_admin_password}"
+  defaultDashboardsEnabled: true
+  persistence:
+    enabled: true
+    storageClassName: standard-rwo
+    size: ${grafana_storage_size}
+  service:
+    type: LoadBalancer
+    annotations:
+      networking.gke.io/load-balancer-type: "Internal"
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ${namespace}
+    datasources:
+      enabled: true
+      searchNamespace: ${namespace}
+  additionalDataSources:
+    - name: Loki
+      uid: loki
+      type: loki
+      access: proxy
+      url: http://loki-gateway.${namespace}.svc.cluster.local
+      isDefault: false
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      access: proxy
+      url: http://tempo.${namespace}.svc.cluster.local:3100
+      isDefault: false
+      jsonData:
+        httpMethod: GET
+        tracesToLogsV2:
+          datasourceUid: loki
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 10d
+    enableRemoteWriteReceiver: false
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard-rwo
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: ${prometheus_storage_size}
+
+alertmanager:
+  enabled: true
+
+prometheusOperator:
+  enabled: true
+
+kube-state-metrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true

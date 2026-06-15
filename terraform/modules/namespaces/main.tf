@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "env_namespaces" {
+resource "kubernetes_namespace_v1" "env_namespaces" {
   for_each = toset(var.namespaces)
 
   metadata {

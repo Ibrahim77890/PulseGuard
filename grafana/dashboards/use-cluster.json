@@ -1,0 +1,126 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"\", image!=\"\"}[5m])) / clamp_min(sum(kube_pod_container_resource_limits{resource=\"cpu\", unit=\"core\"}), 1)",
+          "refId": "A"
+        }
+      ],
+      "title": "Utilization CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum(container_memory_working_set_bytes{container!=\"\", image!=\"\"}) / clamp_min(sum(kube_pod_container_resource_limits{resource=\"memory\", unit=\"byte\"}), 1)",
+          "refId": "A"
+        }
+      ],
+      "title": "Saturation Memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(rate(kube_pod_container_status_restarts_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors Restarts",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Tempo",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "dedupStrategy": "none",
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending"
+      },
+      "targets": [
+        {
+          "query": "{ resource.service.name =~ \".+\" }",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent Traces",
+      "type": "traces"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "pulseguard",
+    "phase-02",
+    "use"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "PulseGuard USE Cluster",
+  "uid": "pulseguard-use-cluster",
+  "version": 1
+}

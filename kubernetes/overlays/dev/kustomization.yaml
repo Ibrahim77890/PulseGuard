@@ -6,6 +6,9 @@ resources:
   - ../../base/namespaces
   - ../../base/rbac
   - ../../base/networkpolicies
+  - ../../observability/namespace
+  - ../../observability/networkpolicies
+  - ../../observability/grafana-dashboards
   
   # Service Mesh configurations
   - ../../mesh/peerauthentication

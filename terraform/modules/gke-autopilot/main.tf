@@ -1,14 +1,13 @@
 resource "google_container_cluster" "autopilot" {
-  name                  = var.cluster_name
-  project               = var.project_id
-  location              = var.region
-  network               = var.network
-  subnetwork            = var.subnetwork
-  enable_autopilot      = true
-  networking_mode       = "VPC_NATIVE"
-  deletion_protection   = false
-  enable_shielded_nodes = true
-  resource_labels       = var.resource_labels
+  name                = var.cluster_name
+  project             = var.project_id
+  location            = var.region
+  network             = var.network
+  subnetwork          = var.subnetwork
+  enable_autopilot    = true
+  networking_mode     = "VPC_NATIVE"
+  deletion_protection = false
+  resource_labels     = var.resource_labels
 
   ip_allocation_policy {
     cluster_secondary_range_name  = var.cluster_secondary_range_name

@@ -1,4 +1,4 @@
-resource "kubernetes_cluster_role" "viewer" {
+resource "kubernetes_cluster_role_v1" "viewer" {
   metadata {
     name = "pulseguard-viewer"
   }
@@ -25,7 +25,7 @@ resource "kubernetes_cluster_role" "viewer" {
   }
 }
 
-resource "kubernetes_cluster_role" "deployer" {
+resource "kubernetes_cluster_role_v1" "deployer" {
   metadata {
     name = "pulseguard-deployer"
   }
@@ -49,7 +49,7 @@ resource "kubernetes_cluster_role" "deployer" {
   }
 }
 
-resource "kubernetes_cluster_role" "namespace_admin" {
+resource "kubernetes_cluster_role_v1" "namespace_admin" {
   metadata {
     name = "pulseguard-namespace-admin"
   }
@@ -61,7 +61,7 @@ resource "kubernetes_cluster_role" "namespace_admin" {
   }
 }
 
-resource "kubernetes_service_account" "viewer" {
+resource "kubernetes_service_account_v1" "viewer" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -70,7 +70,7 @@ resource "kubernetes_service_account" "viewer" {
   }
 }
 
-resource "kubernetes_service_account" "deployer" {
+resource "kubernetes_service_account_v1" "deployer" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -79,7 +79,7 @@ resource "kubernetes_service_account" "deployer" {
   }
 }
 
-resource "kubernetes_service_account" "namespace_admin" {
+resource "kubernetes_service_account_v1" "namespace_admin" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -88,7 +88,7 @@ resource "kubernetes_service_account" "namespace_admin" {
   }
 }
 
-resource "kubernetes_role_binding" "viewer" {
+resource "kubernetes_role_binding_v1" "viewer" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -99,17 +99,17 @@ resource "kubernetes_role_binding" "viewer" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.viewer.metadata[0].name
+    name      = kubernetes_cluster_role_v1.viewer.metadata[0].name
   }
 
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.viewer[each.value].metadata[0].name
+    name      = kubernetes_service_account_v1.viewer[each.value].metadata[0].name
     namespace = each.value
   }
 }
 
-resource "kubernetes_role_binding" "deployer" {
+resource "kubernetes_role_binding_v1" "deployer" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -120,17 +120,17 @@ resource "kubernetes_role_binding" "deployer" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.deployer.metadata[0].name
+    name      = kubernetes_cluster_role_v1.deployer.metadata[0].name
   }
 
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.deployer[each.value].metadata[0].name
+    name      = kubernetes_service_account_v1.deployer[each.value].metadata[0].name
     namespace = each.value
   }
 }
 
-resource "kubernetes_role_binding" "namespace_admin" {
+resource "kubernetes_role_binding_v1" "namespace_admin" {
   for_each = toset(var.namespaces)
 
   metadata {
@@ -141,12 +141,12 @@ resource "kubernetes_role_binding" "namespace_admin" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.namespace_admin.metadata[0].name
+    name      = kubernetes_cluster_role_v1.namespace_admin.metadata[0].name
   }
 
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.namespace_admin[each.value].metadata[0].name
+    name      = kubernetes_service_account_v1.namespace_admin[each.value].metadata[0].name
     namespace = each.value
   }
 }

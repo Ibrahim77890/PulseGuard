@@ -3,7 +3,12 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "01"
+    phase       = "02"
+  }
+
+  grafana_dashboards = {
+    red = file("${path.root}/../../../grafana/dashboards/red-services.json")
+    use = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
   }
 }
 
@@ -51,6 +56,14 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.gke_autopilot.cluster_ca_certificate)
 }
 
+provider "helm" {
+  kubernetes = {
+    host                   = "https://${module.gke_autopilot.cluster_endpoint}"
+    token                  = data.google_client_config.current.access_token
+    cluster_ca_certificate = base64decode(module.gke_autopilot.cluster_ca_certificate)
+  }
+}
+
 module "namespaces" {
   source = "../../modules/namespaces"
 
@@ -95,11 +108,37 @@ module "rbac" {
 module "network_policies" {
   source = "../../modules/network-policies"
 
-  namespaces = var.namespaces
+  namespaces              = var.namespaces
+  observability_namespace = var.observability_namespace
 
   providers = {
     kubernetes = kubernetes
   }
 
   depends_on = [module.namespaces]
+}
+
+module "observability_stack" {
+  source = "../../modules/observability-stack"
+
+  environment                         = var.environment
+  namespace                           = var.observability_namespace
+  grafana_admin_password              = var.grafana_admin_password
+  grafana_dashboards                  = local.grafana_dashboards
+  grafana_storage_size                = var.grafana_storage_size
+  prometheus_storage_size             = var.prometheus_storage_size
+  loki_storage_size                   = var.loki_storage_size
+  tempo_storage_size                  = var.tempo_storage_size
+  promtail_chart_version              = var.promtail_chart_version
+  kube_prometheus_stack_chart_version = var.kube_prometheus_stack_chart_version
+  loki_chart_version                  = var.loki_chart_version
+  tempo_chart_version                 = var.tempo_chart_version
+  otel_collector_chart_version        = var.otel_collector_chart_version
+
+  providers = {
+    kubernetes = kubernetes
+    helm       = helm
+  }
+
+  depends_on = [module.gke_autopilot]
 }

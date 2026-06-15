@@ -1,0 +1,11 @@
+config:
+  clients:
+    - url: http://loki-gateway.${namespace}.svc.cluster.local/loki/api/v1/push
+  snippets:
+    pipelineStages:
+      - cri: {}
+
+serviceMonitor:
+  enabled: true
+  labels:
+    release: kube-prometheus-stack

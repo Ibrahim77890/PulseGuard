@@ -23,6 +23,36 @@ output "gsa_emails" {
   description = "Namespace to Google service account mapping."
 }
 
+output "observability_namespace" {
+  value       = module.observability_stack.namespace
+  description = "Namespace where the Phase 02 observability stack is deployed."
+}
+
+output "grafana_service_name" {
+  value       = module.observability_stack.grafana_service_name
+  description = "Grafana service name exposed through an internal load balancer."
+}
+
+output "prometheus_service_name" {
+  value       = module.observability_stack.prometheus_service_name
+  description = "Prometheus service name inside the cluster."
+}
+
+output "loki_service_name" {
+  value       = module.observability_stack.loki_service_name
+  description = "Loki gateway service name inside the cluster."
+}
+
+output "tempo_service_name" {
+  value       = module.observability_stack.tempo_service_name
+  description = "Tempo service name inside the cluster."
+}
+
+output "otel_collector_service_name" {
+  value       = module.observability_stack.otel_collector_service_name
+  description = "OpenTelemetry Collector service name inside the cluster."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

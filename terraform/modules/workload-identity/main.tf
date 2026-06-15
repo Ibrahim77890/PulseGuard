@@ -6,7 +6,7 @@ resource "google_service_account" "namespace_gsa" {
   project      = var.project_id
 }
 
-resource "kubernetes_service_account" "namespace_ksa" {
+resource "kubernetes_service_account_v1" "namespace_ksa" {
   for_each = toset(var.namespaces)
 
   metadata {

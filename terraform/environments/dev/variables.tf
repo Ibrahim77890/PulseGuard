@@ -77,9 +77,15 @@ variable "namespaces" {
   default     = ["frontend", "backend", "data"]
 }
 
+variable "observability_namespace" {
+  type        = string
+  description = "Namespace used for the observability stack in Phase 02."
+  default     = "observability"
+}
+
 variable "gcp_api_list" {
   type        = list(string)
-  description = "Required Google APIs for PulseGuard Phase 01."
+  description = "Required Google APIs for PulseGuard Phases 01 and 02."
   default = [
     "compute.googleapis.com",
     "container.googleapis.com",
@@ -89,4 +95,65 @@ variable "gcp_api_list" {
     "mesh.googleapis.com",
     "monitoring.googleapis.com"
   ]
+}
+
+variable "grafana_admin_password" {
+  type        = string
+  description = "Grafana admin password for the kube-prometheus-stack release."
+  default     = "change-me-in-tfvars"
+  sensitive   = true
+}
+
+variable "grafana_storage_size" {
+  type        = string
+  description = "Persistent volume size for Grafana."
+  default     = "10Gi"
+}
+
+variable "prometheus_storage_size" {
+  type        = string
+  description = "Persistent volume size for Prometheus."
+  default     = "30Gi"
+}
+
+variable "loki_storage_size" {
+  type        = string
+  description = "Persistent volume size for Loki."
+  default     = "30Gi"
+}
+
+variable "tempo_storage_size" {
+  type        = string
+  description = "Persistent volume size for Tempo."
+  default     = "20Gi"
+}
+
+variable "kube_prometheus_stack_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for kube-prometheus-stack."
+  default     = "61.3.2"
+}
+
+variable "loki_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Grafana Loki."
+  default     = "6.10.0"
+}
+
+variable "tempo_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Grafana Tempo."
+  default     = "1.10.1"
+}
+
+variable "promtail_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Grafana Promtail."
+  default     = "6.16.6"
+}
+
+variable "otel_collector_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for the OpenTelemetry Collector."
+  default     = "0.102.1"
 }
