@@ -1,0 +1,5 @@
+# Add one deployable workload image reference per line once images exist in Artifact Registry.
+# Example:
+# us-central1-docker.pkg.dev/my-project/pulseguard-workloads/frontend:main
+# us-central1-docker.pkg.dev/my-project/pulseguard-workloads/backend:main
+# us-central1-docker.pkg.dev/my-project/pulseguard-workloads/data:main

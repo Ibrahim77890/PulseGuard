@@ -4,6 +4,9 @@ terraform.tfstate
 terraform.tfstate.*
 *.tfplan
 *.log
+*.sarif
+*.spdx.json
+terraform-schema.json
 .idea/
 .vscode/
 Thumbs.db

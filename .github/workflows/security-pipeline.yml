@@ -1,0 +1,113 @@
+name: shift-left-security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+  security-events: write
+
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          trivy-config: security/trivy.yaml
+      - name: Trivy IaC config scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-config.sarif
+          severity: CRITICAL,HIGH
+          trivy-config: security/trivy.yaml
+      - name: Upload Trivy filesystem SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+      - name: Upload Trivy config SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-config.sarif
+
+  sbom-and-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0.17.8
+      - name: Generate repository SBOM
+        run: syft dir:. -o spdx-json > pulseguard-repo.spdx.json
+      - name: Scan workload images when listed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f security/workload-images.txt ]; then
+            exit 0
+          fi
+          while IFS= read -r image; do
+            if [ -z "$image" ] || [[ "$image" =~ ^# ]]; then
+              continue
+            fi
+            safe_name=$(echo "$image" | tr '/:@' '_')
+            echo "Scanning $image"
+            docker pull "$image"
+            syft "$image" -o spdx-json > "sbom-${safe_name}.spdx.json"
+            trivy image --exit-code 1 --severity CRITICAL --ignore-unfixed "$image"
+          done < security/workload-images.txt
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+      - name: Sign images and attest SBOMs when credentials exist
+        if: ${{ secrets.COSIGN_PRIVATE_KEY != '' && secrets.COSIGN_PASSWORD != '' }}
+        shell: bash
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ ! -f security/workload-images.txt ]; then
+            exit 0
+          fi
+          printf '%s' "$COSIGN_PRIVATE_KEY" > cosign.key
+          while IFS= read -r image; do
+            if [ -z "$image" ] || [[ "$image" =~ ^# ]]; then
+              continue
+            fi
+            safe_name=$(echo "$image" | tr '/:@' '_')
+            if [ -f "sbom-${safe_name}.spdx.json" ]; then
+              cosign sign --key cosign.key "$image"
+              cosign attest --key cosign.key --predicate "sbom-${safe_name}.spdx.json" --type spdxjson "$image"
+            fi
+          done < security/workload-images.txt
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-artifacts
+          path: |
+            pulseguard-repo.spdx.json
+            sbom-*.spdx.json

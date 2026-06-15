@@ -63,6 +63,21 @@ output "google_monitoring_slos_enabled" {
   description = "Whether native Cloud Monitoring SLO resources are enabled."
 }
 
+output "artifact_registry_repository" {
+  value       = module.security_pipeline.artifact_registry_repository
+  description = "Artifact Registry repository used by the shift-left security pipeline."
+}
+
+output "binary_authorization_policy_mode" {
+  value       = module.security_pipeline.policy_evaluation_mode
+  description = "Effective Binary Authorization policy evaluation mode."
+}
+
+output "binary_authorization_attestor" {
+  value       = module.security_pipeline.attestor_name
+  description = "Binary Authorization attestor created for CI-signed images."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

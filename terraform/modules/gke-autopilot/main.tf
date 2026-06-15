@@ -20,6 +20,23 @@ resource "google_container_cluster" "autopilot" {
     master_ipv4_cidr_block  = var.enable_private_nodes ? var.master_ipv4_cidr_block : null
   }
 
+  dynamic "binary_authorization" {
+    for_each = var.enable_binary_authorization ? [1] : []
+
+    content {
+      evaluation_mode = var.binary_authorization_evaluation_mode
+    }
+  }
+
+  dynamic "security_posture_config" {
+    for_each = var.enable_security_posture ? [1] : []
+
+    content {
+      mode               = var.security_posture_mode
+      vulnerability_mode = var.security_posture_vulnerability_mode
+    }
+  }
+
   release_channel {
     channel = var.release_channel
   }

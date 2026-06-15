@@ -62,3 +62,33 @@ variable "resource_labels" {
   description = "Labels applied to the GKE cluster."
   default     = {}
 }
+
+variable "enable_binary_authorization" {
+  type        = bool
+  description = "Enable Binary Authorization configuration on the cluster."
+  default     = true
+}
+
+variable "binary_authorization_evaluation_mode" {
+  type        = string
+  description = "Binary Authorization evaluation mode applied at cluster level."
+  default     = "PROJECT_SINGLETON_POLICY_ENFORCE"
+}
+
+variable "enable_security_posture" {
+  type        = bool
+  description = "Enable GKE Security Posture configuration."
+  default     = true
+}
+
+variable "security_posture_mode" {
+  type        = string
+  description = "Off-cluster security posture mode."
+  default     = "BASIC"
+}
+
+variable "security_posture_vulnerability_mode" {
+  type        = string
+  description = "Vulnerability scanning mode for security posture."
+  default     = "VULNERABILITY_BASIC"
+}

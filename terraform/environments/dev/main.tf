@@ -3,7 +3,7 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "02"
+    phase       = "04"
   }
 
   grafana_dashboards = {
@@ -35,18 +35,23 @@ module "gcp_project" {
 module "gke_autopilot" {
   source = "../../modules/gke-autopilot"
 
-  project_id                    = var.project_id
-  cluster_name                  = var.cluster_name
-  region                        = var.region
-  network                       = var.network
-  subnetwork                    = var.subnetwork
-  cluster_secondary_range_name  = var.cluster_secondary_range_name
-  services_secondary_range_name = var.services_secondary_range_name
-  enable_private_nodes          = var.enable_private_nodes
-  enable_private_endpoint       = var.enable_private_endpoint
-  master_ipv4_cidr_block        = var.master_ipv4_cidr_block
-  release_channel               = var.release_channel
-  resource_labels               = local.common_labels
+  project_id                           = var.project_id
+  cluster_name                         = var.cluster_name
+  region                               = var.region
+  network                              = var.network
+  subnetwork                           = var.subnetwork
+  cluster_secondary_range_name         = var.cluster_secondary_range_name
+  services_secondary_range_name        = var.services_secondary_range_name
+  enable_private_nodes                 = var.enable_private_nodes
+  enable_private_endpoint              = var.enable_private_endpoint
+  master_ipv4_cidr_block               = var.master_ipv4_cidr_block
+  release_channel                      = var.release_channel
+  enable_binary_authorization          = var.enable_binary_authorization
+  binary_authorization_evaluation_mode = var.binary_authorization_evaluation_mode
+  enable_security_posture              = var.enable_security_posture
+  security_posture_mode                = var.security_posture_mode
+  security_posture_vulnerability_mode  = var.security_posture_vulnerability_mode
+  resource_labels                      = local.common_labels
 
   depends_on = [module.gcp_project]
 }
@@ -160,4 +165,24 @@ module "slo_engineering" {
   uptime_check_path             = var.uptime_check_path
 
   depends_on = [module.observability_stack]
+}
+
+module "security_pipeline" {
+  source = "../../modules/security-pipeline"
+
+  project_id                                   = var.project_id
+  region                                       = var.region
+  artifact_registry_repository_id              = var.artifact_registry_repository_id
+  artifact_registry_repository_description     = var.artifact_registry_repository_description
+  create_artifact_registry_repository          = var.create_artifact_registry_repository
+  enable_binary_authorization                  = var.enable_binary_authorization
+  binary_authorization_policy_description      = var.binary_authorization_policy_description
+  binary_authorization_enforcement_mode        = var.binary_authorization_enforcement_mode
+  binary_authorization_default_evaluation_mode = var.binary_authorization_default_evaluation_mode
+  attestor_name                                = var.attestor_name
+  attestor_note_name                           = var.attestor_note_name
+  attestor_note_hint                           = var.attestor_note_hint
+  attestor_public_keys                         = var.attestor_public_keys
+
+  depends_on = [module.gcp_project]
 }

@@ -9,10 +9,14 @@ variable "gcp_api_list" {
   default = [
     "compute.googleapis.com",
     "container.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "binaryauthorization.googleapis.com",
+    "containeranalysis.googleapis.com",
     "gkehub.googleapis.com",
     "mesh.googleapis.com",
     "iam.googleapis.com",
     "monitoring.googleapis.com",
-    "logging.googleapis.com"
+    "logging.googleapis.com",
+    "securityposture.googleapis.com"
   ]
 }

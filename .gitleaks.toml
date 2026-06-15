@@ -1,0 +1,8 @@
+title = "PulseGuard gitleaks configuration"
+
+[allowlist]
+description = "Allow documentation placeholders and generated examples."
+paths = [
+  '''terraform/environments/dev/terraform.tfvars.example''',
+  '''security/workload-images.txt'''
+]

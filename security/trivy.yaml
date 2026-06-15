@@ -1,0 +1,11 @@
+timeout: 10m
+severity:
+  - CRITICAL
+  - HIGH
+exit-code: 1
+ignore-unfixed: true
+skip-dirs:
+  - .git
+  - terraform/environments/dev/.terraform
+skip-files:
+  - terraform-schema.json

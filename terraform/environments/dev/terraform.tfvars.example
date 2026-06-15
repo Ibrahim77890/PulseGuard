@@ -15,3 +15,5 @@ loki_storage_size             = "30Gi"
 tempo_storage_size            = "20Gi"
 slo_services                  = ["frontend", "backend", "data"]
 enable_google_monitoring_slos = false
+artifact_registry_repository_id = "pulseguard-workloads"
+binary_authorization_enforcement_mode = "DRYRUN_AUDIT_LOG_ONLY"

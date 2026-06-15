@@ -59,6 +59,36 @@ variable "enable_private_endpoint" {
   default     = true
 }
 
+variable "enable_binary_authorization" {
+  type        = bool
+  description = "Enable Binary Authorization support for the cluster and project policy."
+  default     = true
+}
+
+variable "binary_authorization_evaluation_mode" {
+  type        = string
+  description = "Binary Authorization evaluation mode applied at the GKE cluster level."
+  default     = "PROJECT_SINGLETON_POLICY_ENFORCE"
+}
+
+variable "enable_security_posture" {
+  type        = bool
+  description = "Enable GKE Security Posture configuration on the cluster."
+  default     = true
+}
+
+variable "security_posture_mode" {
+  type        = string
+  description = "Off-cluster GKE Security Posture mode."
+  default     = "BASIC"
+}
+
+variable "security_posture_vulnerability_mode" {
+  type        = string
+  description = "Workload vulnerability scanning mode for GKE Security Posture."
+  default     = "VULNERABILITY_BASIC"
+}
+
 variable "master_ipv4_cidr_block" {
   type        = string
   description = "Private control plane CIDR block."
@@ -210,4 +240,69 @@ variable "uptime_check_path" {
   type        = string
   description = "HTTP path used for uptime checks when native Cloud Monitoring SLOs are enabled."
   default     = "/healthz"
+}
+
+variable "create_artifact_registry_repository" {
+  type        = bool
+  description = "Create the Artifact Registry repository used by the shift-left pipeline."
+  default     = true
+}
+
+variable "artifact_registry_repository_id" {
+  type        = string
+  description = "Artifact Registry repository ID used for signed workload images."
+  default     = "pulseguard-workloads"
+}
+
+variable "artifact_registry_repository_description" {
+  type        = string
+  description = "Description for the Artifact Registry repository."
+  default     = "Signed PulseGuard workload images"
+}
+
+variable "binary_authorization_policy_description" {
+  type        = string
+  description = "Description for the project-level Binary Authorization policy."
+  default     = "PulseGuard shift-left admission policy"
+}
+
+variable "binary_authorization_enforcement_mode" {
+  type        = string
+  description = "Binary Authorization enforcement mode for the default admission rule."
+  default     = "DRYRUN_AUDIT_LOG_ONLY"
+}
+
+variable "binary_authorization_default_evaluation_mode" {
+  type        = string
+  description = "Default Binary Authorization evaluation mode when no attestor is configured."
+  default     = "ALWAYS_ALLOW"
+}
+
+variable "attestor_name" {
+  type        = string
+  description = "Name of the Binary Authorization attestor."
+  default     = "pulseguard-ci-attestor"
+}
+
+variable "attestor_note_name" {
+  type        = string
+  description = "Container Analysis note name used by the attestor."
+  default     = "pulseguard-ci-attestor-note"
+}
+
+variable "attestor_note_hint" {
+  type        = string
+  description = "Human readable name stored in the attestation authority note."
+  default     = "PulseGuard CI Attestor"
+}
+
+variable "attestor_public_keys" {
+  type = list(object({
+    id                  = optional(string)
+    comment             = optional(string)
+    public_key_pem      = string
+    signature_algorithm = string
+  }))
+  description = "PKIX public keys trusted by the Binary Authorization attestor. Leave empty to keep the policy in allow mode until signing is configured."
+  default     = []
 }
