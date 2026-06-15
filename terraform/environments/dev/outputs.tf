@@ -93,6 +93,11 @@ output "audit_logs_dataset" {
   description = "BigQuery dataset receiving exported audit logs."
 }
 
+output "chaos_mesh_namespace" {
+  value       = module.incident_engineering.chaos_mesh_namespace
+  description = "Namespace hosting Chaos Mesh."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

@@ -1,0 +1,24 @@
+name: load-tests
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  k6:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run frontend smoke test
+        uses: grafana/run-k6-action@v1
+        with:
+          path: load-tests/k6/frontend-smoke.js
+        env:
+          TARGET_URL: ${{ secrets.PULSEGUARD_FRONTEND_URL }}
+      - name: Run backend ramp test
+        uses: grafana/run-k6-action@v1
+        with:
+          path: load-tests/k6/backend-ramp.js
+        env:
+          TARGET_URL: ${{ secrets.PULSEGUARD_BACKEND_URL }}

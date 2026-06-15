@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: backend-to-data-latency
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - backend
+    labelSelectors:
+      app: backend
+  delay:
+    latency: "250ms"
+    correlation: "50"
+    jitter: "50ms"
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+        - data
+      labelSelectors:
+        app: data

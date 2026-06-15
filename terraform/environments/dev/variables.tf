@@ -420,3 +420,27 @@ variable "scc_notification_filter" {
   description = "SCC findings filter for notification streaming."
   default     = "state = \"ACTIVE\" AND severity = \"HIGH\" OR severity = \"CRITICAL\""
 }
+
+variable "enable_chaos_mesh" {
+  type        = bool
+  description = "Deploy Chaos Mesh for Phase 06 incident engineering."
+  default     = true
+}
+
+variable "chaos_mesh_namespace" {
+  type        = string
+  description = "Namespace used for Chaos Mesh."
+  default     = "chaos-testing"
+}
+
+variable "chaos_mesh_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Chaos Mesh."
+  default     = "2.8.0"
+}
+
+variable "chaos_mesh_dashboard_enabled" {
+  type        = bool
+  description = "Enable the Chaos Mesh dashboard."
+  default     = false
+}

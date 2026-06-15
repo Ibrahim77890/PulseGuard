@@ -3,7 +3,7 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "05"
+    phase       = "06"
   }
 
   grafana_dashboards = {
@@ -220,4 +220,21 @@ module "runtime_security" {
   }
 
   depends_on = [module.observability_stack, module.gcp_project]
+}
+
+module "incident_engineering" {
+  source = "../../modules/incident-engineering"
+
+  observability_namespace      = var.observability_namespace
+  chaos_mesh_namespace         = var.chaos_mesh_namespace
+  enable_chaos_mesh            = var.enable_chaos_mesh
+  chaos_mesh_chart_version     = var.chaos_mesh_chart_version
+  chaos_mesh_dashboard_enabled = var.chaos_mesh_dashboard_enabled
+
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+  }
+
+  depends_on = [module.observability_stack]
 }
