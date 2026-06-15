@@ -157,3 +157,57 @@ variable "otel_collector_chart_version" {
   description = "Pinned Helm chart version for the OpenTelemetry Collector."
   default     = "0.102.1"
 }
+
+variable "slo_services" {
+  type        = list(string)
+  description = "Services that receive Phase 03 SLO definitions."
+  default     = ["frontend", "backend", "data"]
+}
+
+variable "slo_window_days" {
+  type        = number
+  description = "Rolling SLO window in days."
+  default     = 30
+}
+
+variable "availability_goal" {
+  type        = number
+  description = "Availability SLO target as a ratio."
+  default     = 0.995
+}
+
+variable "latency_goal" {
+  type        = number
+  description = "Latency SLO target as a ratio of requests under threshold."
+  default     = 0.99
+}
+
+variable "latency_threshold_ms" {
+  type        = number
+  description = "Latency threshold in milliseconds for the latency SLO."
+  default     = 500
+}
+
+variable "enable_google_monitoring_slos" {
+  type        = bool
+  description = "Create GCP-native uptime checks and SLO resources when service IDs and URLs are available."
+  default     = false
+}
+
+variable "google_monitoring_service_ids" {
+  type        = map(string)
+  description = "Map of service name to Cloud Monitoring service resource ID for optional native SLOs."
+  default     = {}
+}
+
+variable "uptime_check_urls" {
+  type        = map(string)
+  description = "Map of service name to external or internal URL used by Cloud Monitoring uptime checks."
+  default     = {}
+}
+
+variable "uptime_check_path" {
+  type        = string
+  description = "HTTP path used for uptime checks when native Cloud Monitoring SLOs are enabled."
+  default     = "/healthz"
+}

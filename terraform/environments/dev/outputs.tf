@@ -53,6 +53,16 @@ output "otel_collector_service_name" {
   description = "OpenTelemetry Collector service name inside the cluster."
 }
 
+output "slo_services" {
+  value       = module.slo_engineering.slo_services
+  description = "Services covered by the Phase 03 SLO layer."
+}
+
+output "google_monitoring_slos_enabled" {
+  value       = module.slo_engineering.google_monitoring_slos_enabled
+  description = "Whether native Cloud Monitoring SLO resources are enabled."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

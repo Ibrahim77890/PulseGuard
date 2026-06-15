@@ -9,6 +9,7 @@ resources:
   - ../../observability/namespace
   - ../../observability/networkpolicies
   - ../../observability/grafana-dashboards
+  - ../../observability/slo
   
   # Service Mesh configurations
   - ../../mesh/peerauthentication

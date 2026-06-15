@@ -1,0 +1,18 @@
+service: backend
+window: 30d
+slos:
+  availability:
+    goal: 99.5%
+    description: Successful HTTP requests divided by all HTTP requests.
+    sli_type: request-based
+    promql:
+      good: sum(rate(http_server_requests_seconds_count{service="backend",status!~"5.."}[5m]))
+      total: sum(rate(http_server_requests_seconds_count{service="backend"}[5m]))
+  latency:
+    goal: 99%
+    threshold: 500ms
+    description: Ratio of requests completed in under 500ms.
+    sli_type: request-based
+    promql:
+      good: sum(rate(http_server_requests_seconds_bucket{service="backend",le="0.5"}[5m]))
+      total: sum(rate(http_server_requests_seconds_count{service="backend"}[5m]))

@@ -7,8 +7,9 @@ locals {
   }
 
   grafana_dashboards = {
-    red = file("${path.root}/../../../grafana/dashboards/red-services.json")
-    use = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
+    red          = file("${path.root}/../../../grafana/dashboards/red-services.json")
+    use          = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
+    error_budget = file("${path.root}/../../../grafana/dashboards/error-budget-overview.json")
   }
 }
 
@@ -141,4 +142,22 @@ module "observability_stack" {
   }
 
   depends_on = [module.gke_autopilot]
+}
+
+module "slo_engineering" {
+  source = "../../modules/slo-engineering"
+
+  project_id                    = var.project_id
+  environment                   = var.environment
+  slo_services                  = var.slo_services
+  slo_window_days               = var.slo_window_days
+  availability_goal             = var.availability_goal
+  latency_goal                  = var.latency_goal
+  latency_threshold_ms          = var.latency_threshold_ms
+  enable_google_monitoring_slos = var.enable_google_monitoring_slos
+  google_monitoring_service_ids = var.google_monitoring_service_ids
+  uptime_check_urls             = var.uptime_check_urls
+  uptime_check_path             = var.uptime_check_path
+
+  depends_on = [module.observability_stack]
 }

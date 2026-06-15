@@ -1,0 +1,129 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pulseguard-slo-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: pulseguard.slo.recording
+      rules:
+        - record: slo:availability:ratio_5m
+          expr: |
+            sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[5m]))
+            /
+            clamp_min(sum by (service) (rate(http_server_requests_seconds_count[5m])), 1)
+        - record: slo:availability:ratio_30d
+          expr: |
+            sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[30d]))
+            /
+            clamp_min(sum by (service) (rate(http_server_requests_seconds_count[30d])), 1)
+        - record: slo:latency:ratio_30d
+          expr: |
+            sum by (service) (rate(http_server_requests_seconds_bucket{le="0.5"}[30d]))
+            /
+            clamp_min(sum by (service) (rate(http_server_requests_seconds_count[30d])), 1)
+        - record: slo:availability_burn_rate_5m
+          expr: |
+            (1 - slo:availability:ratio_5m) / 0.005
+        - record: slo:availability_burn_rate_1h
+          expr: |
+            (
+              1 - (
+                sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[1h]))
+                /
+                clamp_min(sum by (service) (rate(http_server_requests_seconds_count[1h])), 1)
+              )
+            ) / 0.005
+        - record: slo:availability_burn_rate_6h
+          expr: |
+            (
+              1 - (
+                sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[6h]))
+                /
+                clamp_min(sum by (service) (rate(http_server_requests_seconds_count[6h])), 1)
+              )
+            ) / 0.005
+        - record: slo:availability_burn_rate_30m
+          expr: |
+            (
+              1 - (
+                sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[30m]))
+                /
+                clamp_min(sum by (service) (rate(http_server_requests_seconds_count[30m])), 1)
+              )
+            ) / 0.005
+        - record: slo:availability_burn_rate_3d
+          expr: |
+            (
+              1 - (
+                sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[3d]))
+                /
+                clamp_min(sum by (service) (rate(http_server_requests_seconds_count[3d])), 1)
+              )
+            ) / 0.005
+        - record: slo:availability_burn_rate_1d
+          expr: |
+            (
+              1 - (
+                sum by (service) (rate(http_server_requests_seconds_count{status!~"5.."}[1d]))
+                /
+                clamp_min(sum by (service) (rate(http_server_requests_seconds_count[1d])), 1)
+              )
+            ) / 0.005
+        - record: slo:error_budget_remaining:ratio
+          expr: |
+            clamp_min((0.995 - (1 - slo:availability:ratio_30d)) / 0.995, 0)
+    - name: pulseguard.slo.alerting
+      rules:
+        - alert: PulseGuardSLOFastBurn
+          expr: slo:availability_burn_rate_1h > 14.4 and slo:availability_burn_rate_5m > 14.4
+          for: 5m
+          labels:
+            severity: critical
+            category: slo
+          annotations:
+            summary: "Fast burn rate on {{ $labels.service }}"
+            description: "Service {{ $labels.service }} is consuming 2% of the 30-day error budget within 1 hour."
+            runbook_url: "docs/runbooks/slo-fast-burn.md"
+        - alert: PulseGuardSLOSlowBurn
+          expr: slo:availability_burn_rate_6h > 6 and slo:availability_burn_rate_30m > 6
+          for: 15m
+          labels:
+            severity: critical
+            category: slo
+          annotations:
+            summary: "Slow burn rate on {{ $labels.service }}"
+            description: "Service {{ $labels.service }} is consuming 5% of the 30-day error budget within 6 hours."
+            runbook_url: "docs/runbooks/slo-slow-burn.md"
+        - alert: PulseGuardSLOCriticalBudgetRisk
+          expr: slo:availability_burn_rate_3d > 1
+          for: 30m
+          labels:
+            severity: critical
+            category: slo
+          annotations:
+            summary: "Critical budget risk on {{ $labels.service }}"
+            description: "Service {{ $labels.service }} is on track to consume 10% of the error budget within 3 days."
+            runbook_url: "docs/runbooks/slo-critical-budget-risk.md"
+        - alert: PulseGuardSLOWarningBudgetRisk
+          expr: slo:availability_burn_rate_1d > 1
+          for: 30m
+          labels:
+            severity: warning
+            category: slo
+          annotations:
+            summary: "Warning budget risk on {{ $labels.service }}"
+            description: "Service {{ $labels.service }} is consuming error budget faster than planned over the last day."
+            runbook_url: "docs/runbooks/slo-warning-budget-risk.md"
+        - alert: PulseGuardSLOBudgetBelowTenPercent
+          expr: slo:error_budget_remaining:ratio < 0.10
+          for: 15m
+          labels:
+            severity: warning
+            category: slo
+          annotations:
+            summary: "Error budget below 10% on {{ $labels.service }}"
+            description: "Service {{ $labels.service }} has less than 10% of its 30-day error budget remaining."
+            runbook_url: "docs/runbooks/slo-budget-below-ten-percent.md"
