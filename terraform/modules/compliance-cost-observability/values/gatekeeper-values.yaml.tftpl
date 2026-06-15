@@ -1,0 +1,10 @@
+audit:
+  interval: 60
+
+controllerManager:
+  exemptNamespaces:
+    - kube-system
+    - gatekeeper-system
+    - ${observability_namespace}
+
+mutatingWebhook: false

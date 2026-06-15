@@ -98,6 +98,21 @@ output "chaos_mesh_namespace" {
   description = "Namespace hosting Chaos Mesh."
 }
 
+output "gatekeeper_namespace" {
+  value       = module.compliance_cost_observability.gatekeeper_namespace
+  description = "Namespace hosting Gatekeeper."
+}
+
+output "billing_export_dataset" {
+  value       = module.compliance_cost_observability.billing_export_dataset
+  description = "BigQuery dataset reserved for Cloud Billing export data."
+}
+
+output "billing_budget_name" {
+  value       = module.compliance_cost_observability.billing_budget_name
+  description = "Cloud Billing budget resource name when enabled."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

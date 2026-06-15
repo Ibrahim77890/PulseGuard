@@ -3,12 +3,13 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "06"
+    phase       = "07"
   }
 
   grafana_dashboards = {
     red               = file("${path.root}/../../../grafana/dashboards/red-services.json")
     use               = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
+    cost_overview     = file("${path.root}/../../../grafana/dashboards/cost-overview.json")
     error_budget      = file("${path.root}/../../../grafana/dashboards/error-budget-overview.json")
     security_overview = file("${path.root}/../../../grafana/dashboards/security-operations-overview.json")
   }
@@ -237,4 +238,32 @@ module "incident_engineering" {
   }
 
   depends_on = [module.observability_stack]
+}
+
+module "compliance_cost_observability" {
+  source = "../../modules/compliance-cost-observability"
+
+  project_id                        = var.project_id
+  region                            = var.region
+  cluster_name                      = var.cluster_name
+  observability_namespace           = var.observability_namespace
+  enable_gatekeeper                 = var.enable_gatekeeper
+  gatekeeper_namespace              = var.gatekeeper_namespace
+  gatekeeper_chart_version          = var.gatekeeper_chart_version
+  enable_opencost                   = var.enable_opencost
+  opencost_chart_version            = var.opencost_chart_version
+  create_billing_export_dataset     = var.create_billing_export_dataset
+  billing_export_dataset_id         = var.billing_export_dataset_id
+  enable_billing_budget             = var.enable_billing_budget
+  billing_account_id                = var.billing_account_id
+  billing_budget_display_name       = var.billing_budget_display_name
+  billing_budget_currency           = var.billing_budget_currency
+  billing_budget_amount_units       = var.billing_budget_amount_units
+  billing_budget_threshold_percents = var.billing_budget_threshold_percents
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [module.observability_stack, module.gcp_project]
 }

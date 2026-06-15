@@ -1,0 +1,16 @@
+opencost:
+  exporter:
+    defaultClusterId: ${cluster_name}
+
+prometheus:
+  internal:
+    enabled: false
+  external:
+    enabled: true
+    url: http://kube-prometheus-stack-prometheus.${observability_namespace}.svc.cluster.local:9090
+
+serviceMonitor:
+  enabled: true
+
+ui:
+  enabled: true

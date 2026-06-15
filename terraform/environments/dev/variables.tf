@@ -117,8 +117,11 @@ variable "gcp_api_list" {
   type        = list(string)
   description = "Required Google APIs for PulseGuard Phases 01 and 02."
   default = [
+    "billingbudgets.googleapis.com",
+    "bigquery.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
+    "cloudbilling.googleapis.com",
     "gkehub.googleapis.com",
     "iam.googleapis.com",
     "logging.googleapis.com",
@@ -443,4 +446,82 @@ variable "chaos_mesh_dashboard_enabled" {
   type        = bool
   description = "Enable the Chaos Mesh dashboard."
   default     = false
+}
+
+variable "enable_gatekeeper" {
+  type        = bool
+  description = "Deploy Gatekeeper for Phase 07 compliance-as-code."
+  default     = true
+}
+
+variable "gatekeeper_namespace" {
+  type        = string
+  description = "Namespace used for Gatekeeper."
+  default     = "gatekeeper-system"
+}
+
+variable "gatekeeper_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Gatekeeper."
+  default     = "3.16.1"
+}
+
+variable "enable_opencost" {
+  type        = bool
+  description = "Deploy OpenCost for Phase 07 cost observability."
+  default     = true
+}
+
+variable "opencost_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for OpenCost."
+  default     = "1.36.0"
+}
+
+variable "create_billing_export_dataset" {
+  type        = bool
+  description = "Create a BigQuery dataset reserved for Cloud Billing export."
+  default     = true
+}
+
+variable "billing_export_dataset_id" {
+  type        = string
+  description = "BigQuery dataset ID used for Cloud Billing export."
+  default     = "pulseguard_billing_export"
+}
+
+variable "enable_billing_budget" {
+  type        = bool
+  description = "Create an optional Cloud Billing budget when a billing account ID is available."
+  default     = false
+}
+
+variable "billing_account_id" {
+  type        = string
+  description = "Billing account ID used for optional budget creation."
+  default     = ""
+}
+
+variable "billing_budget_display_name" {
+  type        = string
+  description = "Display name for the optional Cloud Billing budget."
+  default     = "PulseGuard Monthly Budget"
+}
+
+variable "billing_budget_currency" {
+  type        = string
+  description = "Currency code for the optional Cloud Billing budget."
+  default     = "USD"
+}
+
+variable "billing_budget_amount_units" {
+  type        = number
+  description = "Whole-currency monthly amount for the optional Cloud Billing budget."
+  default     = 300
+}
+
+variable "billing_budget_threshold_percents" {
+  type        = list(number)
+  description = "Threshold percentages for the optional Cloud Billing budget."
+  default     = [0.5, 0.8, 1]
 }
