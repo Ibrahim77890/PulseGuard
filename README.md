@@ -1,8 +1,8 @@
 # PulseGuard
 
-PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 04: the secure platform foundation, observability stack, SLO engineering layer, and shift-left security pipeline.
+PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 05: the secure platform foundation, observability stack, SLO engineering layer, shift-left security pipeline, and runtime security layer.
 
-## Phase 01-04 scope
+## Phase 01-05 scope
 
 - GKE Autopilot cluster with private nodes and private control plane endpoint
 - Workload Identity per namespace: `frontend`, `backend`, `data`
@@ -18,6 +18,8 @@ PulseGuard is a portfolio project for production observability, security, incide
 - Optional Cloud Monitoring uptime checks and native SLO resources
 - Secret scanning, IaC scanning, SBOM generation, and signing workflow support
 - Artifact Registry, Binary Authorization, and GKE Security Posture scaffolding
+- Runtime detection with Falco and forwarded security alert plumbing
+- Audit-log export, forensic SQL queries, and IAM drift alerting
 
 ## Repository layout
 
@@ -25,6 +27,7 @@ PulseGuard is a portfolio project for production observability, security, incide
 - [PHASE_02.md](/e:/pulseguard/PHASE_02.md)
 - [PHASE_03.md](/e:/pulseguard/PHASE_03.md)
 - [PHASE_04.md](/e:/pulseguard/PHASE_04.md)
+- [PHASE_05.md](/e:/pulseguard/PHASE_05.md)
 - [terraform/environments/dev/main.tf](/e:/pulseguard/terraform/environments/dev/main.tf)
 - [terraform/modules/gke-autopilot/main.tf](/e:/pulseguard/terraform/modules/gke-autopilot/main.tf)
 - [terraform/modules/workload-identity/main.tf](/e:/pulseguard/terraform/modules/workload-identity/main.tf)
@@ -47,4 +50,4 @@ Terraform manages the workload identity KSAs so the manifest overlay intentional
 
 ## Validation
 
-Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), and [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, and security pipeline are complete.
+Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md), and [docs/phase-05-validation-checklist.md](/e:/pulseguard/docs/phase-05-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, shift-left security pipeline, and runtime security layer are complete.

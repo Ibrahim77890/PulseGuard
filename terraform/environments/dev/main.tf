@@ -3,13 +3,14 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "04"
+    phase       = "05"
   }
 
   grafana_dashboards = {
-    red          = file("${path.root}/../../../grafana/dashboards/red-services.json")
-    use          = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
-    error_budget = file("${path.root}/../../../grafana/dashboards/error-budget-overview.json")
+    red               = file("${path.root}/../../../grafana/dashboards/red-services.json")
+    use               = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
+    error_budget      = file("${path.root}/../../../grafana/dashboards/error-budget-overview.json")
+    security_overview = file("${path.root}/../../../grafana/dashboards/security-operations-overview.json")
   }
 }
 
@@ -185,4 +186,38 @@ module "security_pipeline" {
   attestor_public_keys                         = var.attestor_public_keys
 
   depends_on = [module.gcp_project]
+}
+
+module "runtime_security" {
+  source = "../../modules/runtime-security"
+
+  project_id                          = var.project_id
+  region                              = var.region
+  observability_namespace             = var.observability_namespace
+  enable_falco                        = var.enable_falco
+  falco_chart_version                 = var.falco_chart_version
+  falco_sidekick_chart_version        = var.falco_sidekick_chart_version
+  falco_alert_topic_name              = var.falco_alert_topic_name
+  scc_findings_topic_name             = var.scc_findings_topic_name
+  security_alert_bucket_name          = var.security_alert_bucket_name
+  security_alert_function_name        = var.security_alert_function_name
+  security_alert_function_runtime     = var.security_alert_function_runtime
+  security_alert_function_entry_point = var.security_alert_function_entry_point
+  security_alert_metric_name          = var.security_alert_metric_name
+  security_alert_policy_display_name  = var.security_alert_policy_display_name
+  iam_drift_metric_name               = var.iam_drift_metric_name
+  iam_drift_alert_policy_display_name = var.iam_drift_alert_policy_display_name
+  audit_logs_dataset_id               = var.audit_logs_dataset_id
+  audit_logs_sink_name                = var.audit_logs_sink_name
+  enable_scc_notification_config      = var.enable_scc_notification_config
+  organization_id                     = var.organization_id
+  scc_notification_config_id          = var.scc_notification_config_id
+  scc_notification_filter             = var.scc_notification_filter
+
+  providers = {
+    kubernetes = kubernetes
+    helm       = helm
+  }
+
+  depends_on = [module.observability_stack, module.gcp_project]
 }

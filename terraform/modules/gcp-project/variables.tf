@@ -11,12 +11,18 @@ variable "gcp_api_list" {
     "container.googleapis.com",
     "artifactregistry.googleapis.com",
     "binaryauthorization.googleapis.com",
+    "bigquery.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudbuild.googleapis.com",
     "containeranalysis.googleapis.com",
     "gkehub.googleapis.com",
     "mesh.googleapis.com",
     "iam.googleapis.com",
     "monitoring.googleapis.com",
     "logging.googleapis.com",
+    "pubsub.googleapis.com",
+    "run.googleapis.com",
+    "securitycenter.googleapis.com",
     "securityposture.googleapis.com"
   ]
 }

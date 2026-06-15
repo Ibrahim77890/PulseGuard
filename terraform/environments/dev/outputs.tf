@@ -78,6 +78,21 @@ output "binary_authorization_attestor" {
   description = "Binary Authorization attestor created for CI-signed images."
 }
 
+output "falco_alert_topic" {
+  value       = module.runtime_security.falco_alert_topic
+  description = "Pub/Sub topic receiving Falco runtime alerts."
+}
+
+output "scc_findings_topic" {
+  value       = module.runtime_security.scc_findings_topic
+  description = "Pub/Sub topic receiving SCC finding notifications."
+}
+
+output "audit_logs_dataset" {
+  value       = module.runtime_security.audit_logs_dataset
+  description = "BigQuery dataset receiving exported audit logs."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."

@@ -1,0 +1,1 @@
+# Cloud Logging is available via the standard library logging integration for this small forwarder.

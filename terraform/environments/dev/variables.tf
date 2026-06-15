@@ -306,3 +306,117 @@ variable "attestor_public_keys" {
   description = "PKIX public keys trusted by the Binary Authorization attestor. Leave empty to keep the policy in allow mode until signing is configured."
   default     = []
 }
+
+variable "enable_falco" {
+  type        = bool
+  description = "Deploy Falco and Falcosidekick for runtime security detection."
+  default     = true
+}
+
+variable "falco_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Falco."
+  default     = "4.19.0"
+}
+
+variable "falco_sidekick_chart_version" {
+  type        = string
+  description = "Pinned Helm chart version for Falcosidekick."
+  default     = "0.8.3"
+}
+
+variable "falco_alert_topic_name" {
+  type        = string
+  description = "Pub/Sub topic name for Falco runtime alerts."
+  default     = "pulseguard-falco-alerts"
+}
+
+variable "scc_findings_topic_name" {
+  type        = string
+  description = "Pub/Sub topic name for SCC finding notifications."
+  default     = "pulseguard-scc-findings"
+}
+
+variable "security_alert_bucket_name" {
+  type        = string
+  description = "Cloud Storage bucket used to stage the runtime alert forwarding function source."
+  default     = "pulseguard-security-alerts-src"
+}
+
+variable "security_alert_function_name" {
+  type        = string
+  description = "Cloud Function name used to forward runtime alerts into Cloud Logging."
+  default     = "pulseguard-security-alert-forwarder"
+}
+
+variable "security_alert_function_runtime" {
+  type        = string
+  description = "Runtime for the runtime alert forwarding function."
+  default     = "python312"
+}
+
+variable "security_alert_function_entry_point" {
+  type        = string
+  description = "Entry point for the runtime alert forwarding function."
+  default     = "handle_pubsub"
+}
+
+variable "security_alert_metric_name" {
+  type        = string
+  description = "Log-based metric name for forwarded runtime security alerts."
+  default     = "runtime_security_alert_events"
+}
+
+variable "security_alert_policy_display_name" {
+  type        = string
+  description = "Monitoring alert policy display name for runtime security alerts."
+  default     = "PulseGuard Runtime Security Alerts"
+}
+
+variable "iam_drift_metric_name" {
+  type        = string
+  description = "Log-based metric name for IAM drift detection."
+  default     = "iam_drift_events"
+}
+
+variable "iam_drift_alert_policy_display_name" {
+  type        = string
+  description = "Monitoring alert policy display name for IAM drift alerts."
+  default     = "PulseGuard IAM Drift Detection"
+}
+
+variable "audit_logs_dataset_id" {
+  type        = string
+  description = "BigQuery dataset ID used for exported audit logs."
+  default     = "pulseguard_audit_logs"
+}
+
+variable "audit_logs_sink_name" {
+  type        = string
+  description = "Logging sink name for audit-log export to BigQuery."
+  default     = "pulseguard-audit-logs-sink"
+}
+
+variable "enable_scc_notification_config" {
+  type        = bool
+  description = "Enable org-level Security Command Center notification config."
+  default     = false
+}
+
+variable "organization_id" {
+  type        = string
+  description = "GCP organization ID used for SCC notification config."
+  default     = ""
+}
+
+variable "scc_notification_config_id" {
+  type        = string
+  description = "SCC notification config ID."
+  default     = "pulseguard-scc-findings"
+}
+
+variable "scc_notification_filter" {
+  type        = string
+  description = "SCC findings filter for notification streaming."
+  default     = "state = \"ACTIVE\" AND severity = \"HIGH\" OR severity = \"CRITICAL\""
+}

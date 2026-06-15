@@ -17,3 +17,5 @@ slo_services                  = ["frontend", "backend", "data"]
 enable_google_monitoring_slos = false
 artifact_registry_repository_id = "pulseguard-workloads"
 binary_authorization_enforcement_mode = "DRYRUN_AUDIT_LOG_ONLY"
+enable_falco                    = true
+enable_scc_notification_config  = false

@@ -1,0 +1,43 @@
+tty: true
+
+falcosidekick:
+  enabled: true
+  url: http://${falco_sidekick_service}:2801/
+
+customRules:
+  pulseguard-rules.yaml: |-
+    - rule: PulseGuard Shell Spawned In Container
+      desc: Detect shell execution inside a container
+      condition: spawned_process and container and shell_procs
+      output: >
+        PulseGuard shell inside container detected
+        (user=%user.name command=%proc.cmdline container=%container.name image=%container.image.repository)
+      priority: WARNING
+      tags: [pulseguard, runtime, shell]
+
+    - rule: PulseGuard Privilege Escalation Attempt
+      desc: Detect privilege escalation in a container
+      condition: container and evt.type=setuid and evt.arg.uid!=0
+      output: >
+        PulseGuard privilege escalation attempt
+        (user=%user.name command=%proc.cmdline container=%container.name)
+      priority: CRITICAL
+      tags: [pulseguard, runtime, privilege-escalation]
+
+    - rule: PulseGuard Unexpected Sensitive File Access
+      desc: Detect reads of sensitive files in containers
+      condition: container and open_read and fd.name in (/etc/shadow, /etc/passwd, /root/.ssh/id_rsa)
+      output: >
+        PulseGuard sensitive file access
+        (file=%fd.name command=%proc.cmdline container=%container.name)
+      priority: ERROR
+      tags: [pulseguard, runtime, file-access]
+
+    - rule: PulseGuard Unexpected Outbound Connection
+      desc: Detect unexpected outbound connections from containers
+      condition: outbound and container
+      output: >
+        PulseGuard outbound connection observed
+        (proc=%proc.name fd=%fd.name container=%container.name image=%container.image.repository)
+      priority: NOTICE
+      tags: [pulseguard, runtime, network]
