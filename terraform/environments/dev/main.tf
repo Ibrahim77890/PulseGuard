@@ -3,7 +3,7 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "07"
+    phase       = "08"
   }
 
   grafana_dashboards = {
@@ -264,6 +264,41 @@ module "compliance_cost_observability" {
   providers = {
     helm = helm
   }
+
+  depends_on = [module.observability_stack, module.gcp_project]
+}
+
+module "aiops_assistant" {
+  source = "../../modules/aiops-assistant"
+
+  project_id                      = var.project_id
+  region                          = var.region
+  network                         = var.network
+  subnetwork                      = var.subnetwork
+  aiops_service_name              = var.aiops_service_name
+  aiops_service_image             = var.aiops_service_image
+  aiops_service_account_id        = var.aiops_service_account_id
+  aiops_ingress                   = var.aiops_ingress
+  aiops_timeout_seconds           = var.aiops_timeout_seconds
+  aiops_min_instances             = var.aiops_min_instances
+  aiops_max_instances             = var.aiops_max_instances
+  aiops_cpu                       = var.aiops_cpu
+  aiops_memory                    = var.aiops_memory
+  allow_unauthenticated           = var.aiops_allow_unauthenticated
+  openrouter_api_key_secret_name  = var.openrouter_api_key_secret_name
+  openrouter_api_key_secret_value = var.openrouter_api_key_secret_value
+  openrouter_base_url             = var.openrouter_base_url
+  openrouter_default_model        = var.openrouter_default_model
+  openrouter_reasoning_model      = var.openrouter_reasoning_model
+  prometheus_base_url             = var.aiops_prometheus_base_url
+  loki_base_url                   = var.aiops_loki_base_url
+  grafana_base_url                = var.aiops_grafana_base_url
+  enable_redis_memory             = var.aiops_enable_redis_memory
+  redis_instance_name             = var.aiops_redis_instance_name
+  redis_memory_size_gb            = var.aiops_redis_memory_size_gb
+  redis_version                   = var.aiops_redis_version
+  aiops_vpc_connector_name        = var.aiops_vpc_connector_name
+  aiops_vpc_connector_cidr        = var.aiops_vpc_connector_cidr
 
   depends_on = [module.observability_stack, module.gcp_project]
 }

@@ -120,11 +120,20 @@ variable "gcp_api_list" {
     "billingbudgets.googleapis.com",
     "bigquery.googleapis.com",
     "compute.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "cloudtrace.googleapis.com",
     "container.googleapis.com",
     "cloudbilling.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "redis.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "vpcaccess.googleapis.com",
     "gkehub.googleapis.com",
     "iam.googleapis.com",
-    "logging.googleapis.com",
     "mesh.googleapis.com",
     "monitoring.googleapis.com"
   ]
@@ -524,4 +533,149 @@ variable "billing_budget_threshold_percents" {
   type        = list(number)
   description = "Threshold percentages for the optional Cloud Billing budget."
   default     = [0.5, 0.8, 1]
+}
+
+variable "aiops_service_name" {
+  type        = string
+  description = "Cloud Run service name for the Phase 08 AIOps assistant."
+  default     = "pulseguard-aiops-assistant"
+}
+
+variable "aiops_service_image" {
+  type        = string
+  description = "Container image for the AIOps assistant."
+  default     = "us-central1-docker.pkg.dev/my-gcp-project-id/pulseguard-workloads/aiops-assistant:latest"
+}
+
+variable "aiops_service_account_id" {
+  type        = string
+  description = "Service account ID for the AIOps assistant."
+  default     = "pulseguard-aiops"
+}
+
+variable "aiops_ingress" {
+  type        = string
+  description = "Cloud Run ingress setting for the AIOps assistant."
+  default     = "INGRESS_TRAFFIC_ALL"
+}
+
+variable "aiops_timeout_seconds" {
+  type        = number
+  description = "Request timeout for the AIOps assistant."
+  default     = 60
+}
+
+variable "aiops_min_instances" {
+  type        = number
+  description = "Minimum instances for the AIOps assistant."
+  default     = 0
+}
+
+variable "aiops_max_instances" {
+  type        = number
+  description = "Maximum instances for the AIOps assistant."
+  default     = 3
+}
+
+variable "aiops_cpu" {
+  type        = string
+  description = "CPU limit for the AIOps assistant."
+  default     = "1"
+}
+
+variable "aiops_memory" {
+  type        = string
+  description = "Memory limit for the AIOps assistant."
+  default     = "512Mi"
+}
+
+variable "aiops_allow_unauthenticated" {
+  type        = bool
+  description = "Allow unauthenticated access to the AIOps assistant."
+  default     = true
+}
+
+variable "openrouter_api_key_secret_name" {
+  type        = string
+  description = "Secret Manager secret name used for the OpenRouter API key."
+  default     = "pulseguard-openrouter-api-key"
+}
+
+variable "openrouter_api_key_secret_value" {
+  type        = string
+  description = "Optional secret value used to seed the OpenRouter API key."
+  default     = ""
+  sensitive   = true
+}
+
+variable "openrouter_base_url" {
+  type        = string
+  description = "OpenRouter base API URL."
+  default     = "https://openrouter.ai/api/v1"
+}
+
+variable "openrouter_default_model" {
+  type        = string
+  description = "Default model route for the AIOps assistant."
+  default     = "openai/gpt-4o-mini"
+}
+
+variable "openrouter_reasoning_model" {
+  type        = string
+  description = "Reasoning model route for deeper incident investigations."
+  default     = "anthropic/claude-3.5-haiku"
+}
+
+variable "aiops_prometheus_base_url" {
+  type        = string
+  description = "Prometheus base URL used by the AIOps assistant."
+  default     = "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090"
+}
+
+variable "aiops_loki_base_url" {
+  type        = string
+  description = "Loki base URL used by the AIOps assistant."
+  default     = "http://loki-gateway.observability.svc.cluster.local"
+}
+
+variable "aiops_grafana_base_url" {
+  type        = string
+  description = "Grafana base URL used by the AIOps assistant."
+  default     = "http://grafana.observability.svc.cluster.local"
+}
+
+variable "aiops_enable_redis_memory" {
+  type        = bool
+  description = "Provision Redis-backed short-term memory for the AIOps assistant."
+  default     = true
+}
+
+variable "aiops_redis_instance_name" {
+  type        = string
+  description = "Memorystore Redis instance name used by the AIOps assistant."
+  default     = "pulseguard-aiops-memory"
+}
+
+variable "aiops_redis_memory_size_gb" {
+  type        = number
+  description = "Redis memory size in GB for the AIOps assistant."
+  default     = 1
+}
+
+variable "aiops_redis_version" {
+  type        = string
+  description = "Redis version used by the AIOps assistant."
+  default     = "REDIS_7_0"
+}
+
+variable "aiops_vpc_connector_name" {
+  type        = string
+  description = "VPC Access connector name used by the AIOps assistant."
+  default     = "pulseguard-aiops-connector"
+}
+
+variable "aiops_vpc_connector_cidr" {
+  type        = string
+  description = "CIDR range reserved for the AIOps VPC Access connector."
+  default     = "10.8.0.0/28"
 }

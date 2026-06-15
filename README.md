@@ -1,8 +1,8 @@
 # PulseGuard
 
-PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 07: the secure platform foundation, observability stack, SLO engineering layer, shift-left security pipeline, runtime security layer, incident-engineering assets, and compliance plus cost-observability controls.
+PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 08: the secure platform foundation, observability stack, SLO engineering layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, and an AIOps assistant layer.
 
-## Phase 01-07 scope
+## Phase 01-08 scope
 
 - GKE Autopilot cluster with private nodes and private control plane endpoint
 - Workload Identity per namespace: `frontend`, `backend`, `data`
@@ -22,6 +22,7 @@ PulseGuard is a portfolio project for production observability, security, incide
 - Audit-log export, forensic SQL queries, and IAM drift alerting
 - Runbooks, chaos experiments, load tests, and postmortem templates
 - Gatekeeper policy enforcement, OpenCost scaffolding, billing export dataset setup, and FinOps queries
+- Cloud Run AIOps assistant with read-only tool calling, session memory, and runbook/postmortem RAG
 
 ## Repository layout
 
@@ -32,6 +33,7 @@ PulseGuard is a portfolio project for production observability, security, incide
 - [PHASE_05.md](/e:/pulseguard/PHASE_05.md)
 - [PHASE_06.md](/e:/pulseguard/PHASE_06.md)
 - [PHASE_07.md](/e:/pulseguard/PHASE_07.md)
+- [PHASE_08.md](/e:/pulseguard/PHASE_08.md)
 - [terraform/environments/dev/main.tf](/e:/pulseguard/terraform/environments/dev/main.tf)
 - [terraform/modules/gke-autopilot/main.tf](/e:/pulseguard/terraform/modules/gke-autopilot/main.tf)
 - [terraform/modules/workload-identity/main.tf](/e:/pulseguard/terraform/modules/workload-identity/main.tf)
@@ -54,4 +56,4 @@ Terraform manages the workload identity KSAs so the manifest overlay intentional
 
 ## Validation
 
-Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md), [docs/phase-05-validation-checklist.md](/e:/pulseguard/docs/phase-05-validation-checklist.md), [docs/phase-06-validation-checklist.md](/e:/pulseguard/docs/phase-06-validation-checklist.md), and [docs/phase-07-validation-checklist.md](/e:/pulseguard/docs/phase-07-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, shift-left security pipeline, runtime security layer, incident-engineering assets, and compliance plus cost-observability controls are complete.
+Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md), [docs/phase-05-validation-checklist.md](/e:/pulseguard/docs/phase-05-validation-checklist.md), [docs/phase-06-validation-checklist.md](/e:/pulseguard/docs/phase-06-validation-checklist.md), [docs/phase-07-validation-checklist.md](/e:/pulseguard/docs/phase-07-validation-checklist.md), and [docs/phase-08-validation-checklist.md](/e:/pulseguard/docs/phase-08-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, and the AIOps assistant are complete.

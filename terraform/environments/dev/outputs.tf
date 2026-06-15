@@ -113,6 +113,21 @@ output "billing_budget_name" {
   description = "Cloud Billing budget resource name when enabled."
 }
 
+output "aiops_service_url" {
+  value       = module.aiops_assistant.service_url
+  description = "URL for the Phase 08 AIOps assistant service."
+}
+
+output "aiops_service_account_email" {
+  value       = module.aiops_assistant.service_account_email
+  description = "Service account email used by the Phase 08 AIOps assistant."
+}
+
+output "aiops_redis_host" {
+  value       = module.aiops_assistant.redis_host
+  description = "Memorystore host used by the Phase 08 AIOps assistant."
+}
+
 output "kubectl_get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${module.gke_autopilot.cluster_name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl for the cluster."
