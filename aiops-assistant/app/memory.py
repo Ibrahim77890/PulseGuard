@@ -2,7 +2,10 @@ import json
 from collections import defaultdict, deque
 from typing import Any
 
-import redis
+try:
+    import redis
+except ImportError:  # pragma: no cover - local fallback for environments without optional deps
+    redis = None
 
 from app.config import settings
 
@@ -29,6 +32,8 @@ class InMemorySessionMemory(SessionMemory):
 
 class RedisSessionMemory(SessionMemory):
     def __init__(self, host: str, port: int, password: str, limit: int, ttl_seconds: int) -> None:
+        if redis is None:
+            raise RuntimeError("redis dependency is not installed")
         self.limit = limit
         self.ttl_seconds = ttl_seconds
         self.client = redis.Redis(
@@ -53,7 +58,7 @@ class RedisSessionMemory(SessionMemory):
 
 
 def build_session_memory() -> SessionMemory:
-    if settings.memory_backend == "redis" and settings.redis_host:
+    if settings.memory_backend == "redis" and settings.redis_host and redis is not None:
         return RedisSessionMemory(
             host=settings.redis_host,
             port=settings.redis_port,

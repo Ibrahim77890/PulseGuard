@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - cost-overview-dashboard-configmap.yaml
   - error-budget-dashboard-configmap.yaml
+  - llm-agent-observability-dashboard-configmap.yaml
   - red-dashboard-configmap.yaml
   - security-operations-dashboard-configmap.yaml
   - use-dashboard-configmap.yaml

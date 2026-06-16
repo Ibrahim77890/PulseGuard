@@ -1,0 +1,92 @@
+[
+  {
+    "id": "eval-01",
+    "query": "Investigate the backend latency alert.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["latency", "dashboard", "logs"]
+  },
+  {
+    "id": "eval-02",
+    "query": "Investigate the fast burn alert for checkout availability.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["burn", "error budget", "runbook"]
+  },
+  {
+    "id": "eval-03",
+    "query": "Investigate the slow burn alert.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["slow", "dashboard", "logs"]
+  },
+  {
+    "id": "eval-04",
+    "query": "Investigate recent timeout errors in backend logs.",
+    "expected_tools": ["fetch_grafana_status", "query_loki", "search_incident_memory"],
+    "expected_keywords": ["logs", "incident", "next steps"]
+  },
+  {
+    "id": "eval-05",
+    "query": "Investigate a warning budget risk on the frontend service.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["warning", "budget", "dashboard"]
+  },
+  {
+    "id": "eval-06",
+    "query": "Investigate the critical budget risk for backend.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["critical", "budget", "runbook"]
+  },
+  {
+    "id": "eval-07",
+    "query": "Investigate an availability incident with 5xx spikes.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory"],
+    "expected_keywords": ["5xx", "dashboard", "logs"]
+  },
+  {
+    "id": "eval-08",
+    "query": "Investigate the backend alert and show similar incidents.",
+    "expected_tools": ["fetch_grafana_status", "query_loki", "search_incident_memory"],
+    "expected_keywords": ["similar", "incident", "next steps"]
+  },
+  {
+    "id": "eval-09",
+    "query": "Investigate error budget exhaustion risk.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "search_incident_memory"],
+    "expected_keywords": ["error budget", "dashboard", "next steps"]
+  },
+  {
+    "id": "eval-10",
+    "query": "Investigate a latency regression in the data service.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["latency", "logs", "runbook"]
+  },
+  {
+    "id": "eval-11",
+    "query": "Investigate a burst of service errors after a deploy.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory"],
+    "expected_keywords": ["errors", "dashboard", "logs"]
+  },
+  {
+    "id": "eval-12",
+    "query": "Investigate the latest alert and summarize next steps.",
+    "expected_tools": ["fetch_grafana_status", "query_loki", "search_incident_memory"],
+    "expected_keywords": ["next steps", "dashboard", "logs"]
+  },
+  {
+    "id": "eval-13",
+    "query": "Investigate the frontend slow burn condition.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["slow", "runbook", "dashboard"]
+  },
+  {
+    "id": "eval-14",
+    "query": "Investigate checkout latency and correlate logs.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["latency", "logs", "correlate"]
+  },
+  {
+    "id": "eval-15",
+    "query": "Investigate a burn alert and show confidence.",
+    "expected_tools": ["fetch_grafana_status", "query_prometheus", "query_loki", "search_incident_memory", "fetch_runbook"],
+    "expected_keywords": ["confidence", "burn", "runbook"]
+  }
+]

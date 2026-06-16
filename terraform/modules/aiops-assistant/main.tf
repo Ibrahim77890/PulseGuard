@@ -140,6 +140,21 @@ resource "google_cloud_run_v2_service" "aiops" {
       }
 
       env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = var.otel_exporter_otlp_endpoint
+      }
+
+      env {
+        name  = "EVAL_RESULTS_PATH"
+        value = var.eval_results_path
+      }
+
+      env {
+        name  = "MODEL_PRICING_USD_PER_MILLION"
+        value = jsonencode(var.model_pricing_usd_per_million)
+      }
+
+      env {
         name  = "MEMORY_BACKEND"
         value = local.memory_backend
       }

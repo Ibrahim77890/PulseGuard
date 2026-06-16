@@ -13,6 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install eval dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r aiops-assistant/requirements.txt
+      - name: Run eval harness
+        env:
+          PYTHONPATH: aiops-assistant
+        run: python aiops-assistant/evals/run_eval.py
       - uses: docker/setup-buildx-action@v3
       - name: Build assistant image
         run: docker build -f aiops-assistant/Dockerfile .

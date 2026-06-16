@@ -3,10 +3,11 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "08"
+    phase       = "09"
   }
 
   grafana_dashboards = {
+    llm_agent         = file("${path.root}/../../../grafana/dashboards/llm-agent-observability.json")
     red               = file("${path.root}/../../../grafana/dashboards/red-services.json")
     use               = file("${path.root}/../../../grafana/dashboards/use-cluster.json")
     cost_overview     = file("${path.root}/../../../grafana/dashboards/cost-overview.json")
@@ -293,6 +294,9 @@ module "aiops_assistant" {
   prometheus_base_url             = var.aiops_prometheus_base_url
   loki_base_url                   = var.aiops_loki_base_url
   grafana_base_url                = var.aiops_grafana_base_url
+  otel_exporter_otlp_endpoint     = var.aiops_otel_exporter_otlp_endpoint
+  eval_results_path               = var.aiops_eval_results_path
+  model_pricing_usd_per_million   = var.aiops_model_pricing_usd_per_million
   enable_redis_memory             = var.aiops_enable_redis_memory
   redis_instance_name             = var.aiops_redis_instance_name
   redis_memory_size_gb            = var.aiops_redis_memory_size_gb

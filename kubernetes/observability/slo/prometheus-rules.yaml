@@ -75,6 +75,24 @@ spec:
         - record: slo:error_budget_remaining:ratio
           expr: |
             clamp_min((0.995 - (1 - slo:availability:ratio_30d)) / 0.995, 0)
+        - record: slo:aiops:availability:ratio_5m
+          expr: |
+            sum(rate(pulseguard_aiops_requests_total{outcome="success"}[5m]))
+            /
+            clamp_min(sum(rate(pulseguard_aiops_requests_total[5m])), 1)
+        - record: slo:aiops:latency:ratio_30d
+          expr: |
+            sum(rate(pulseguard_aiops_request_latency_seconds_bucket{le="10"}[30d]))
+            /
+            clamp_min(sum(rate(pulseguard_aiops_request_latency_seconds_count[30d])), 1)
+        - record: slo:aiops:tool_success:ratio_30d
+          expr: |
+            sum(rate(pulseguard_aiops_tool_calls_total{outcome="success"}[30d]))
+            /
+            clamp_min(sum(rate(pulseguard_aiops_tool_calls_total[30d])), 1)
+        - record: slo:aiops:eval_quality:ratio
+          expr: |
+            pulseguard_aiops_eval_quality_score / 100
     - name: pulseguard.slo.alerting
       rules:
         - alert: PulseGuardSLOFastBurn
@@ -127,3 +145,38 @@ spec:
             summary: "Error budget below 10% on {{ $labels.service }}"
             description: "Service {{ $labels.service }} has less than 10% of its 30-day error budget remaining."
             runbook_url: "docs/runbooks/slo-budget-below-ten-percent.md"
+        - alert: PulseGuardAIOpsLatencySLOWarning
+          expr: histogram_quantile(0.95, sum(rate(pulseguard_aiops_request_latency_seconds_bucket[5m])) by (le)) > 10
+          for: 10m
+          labels:
+            severity: warning
+            category: aiops
+          annotations:
+            summary: "AIOps assistant p95 latency is above target"
+            description: "The AIOps assistant p95 response time is above 10 seconds."
+            runbook_url: "docs/runbooks/aiops-response-latency.md"
+        - alert: PulseGuardAIOpsToolFailureWarning
+          expr: |
+            (
+              sum(rate(pulseguard_aiops_tool_calls_total{outcome="error"}[10m]))
+              /
+              clamp_min(sum(rate(pulseguard_aiops_tool_calls_total[10m])), 1)
+            ) > 0.05
+          for: 10m
+          labels:
+            severity: warning
+            category: aiops
+          annotations:
+            summary: "AIOps assistant tool failures are elevated"
+            description: "More than 5% of assistant tool calls are failing."
+            runbook_url: "docs/runbooks/aiops-tool-failure.md"
+        - alert: PulseGuardAIOpsEvalQualityWarning
+          expr: pulseguard_aiops_eval_quality_score < 85
+          for: 5m
+          labels:
+            severity: warning
+            category: aiops
+          annotations:
+            summary: "AIOps assistant eval quality dropped below threshold"
+            description: "The latest eval quality score for the AIOps assistant is below 85%."
+            runbook_url: "docs/runbooks/aiops-eval-quality.md"

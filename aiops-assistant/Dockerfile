@@ -9,6 +9,7 @@ COPY aiops-assistant/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY aiops-assistant/app /app/app
+COPY aiops-assistant/evals /app/evals
 COPY docs /app/docs
 
 EXPOSE 8080

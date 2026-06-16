@@ -27,4 +27,5 @@ enable_billing_budget           = false
 # billing_account_id            = "000000-000000-000000"
 aiops_service_image             = "us-central1-docker.pkg.dev/my-gcp-project-id/pulseguard-workloads/aiops-assistant:latest"
 aiops_enable_redis_memory       = true
+aiops_otel_exporter_otlp_endpoint = "http://otel-collector.observability.svc.cluster.local:4318/v1/traces"
 # openrouter_api_key_secret_value = "replace-me"

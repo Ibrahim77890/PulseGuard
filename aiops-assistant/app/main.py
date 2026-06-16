@@ -1,12 +1,16 @@
+import time
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from prometheus_client import make_asgi_app
 
 from app.agent import AIOpsAssistant
 from app.config import settings
 from app.memory import build_session_memory
 from app.models import AlertTriageRequest, ChatRequest, ChatResponse, SessionSnapshot
+from app.observability import configure_observability, observe_request
 from app.tools import ReadOnlyTools
 
 
@@ -18,11 +22,13 @@ tools = ReadOnlyTools()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global assistant
+    configure_observability(app)
     assistant = AIOpsAssistant(memory=memory, tools=tools)
     yield
 
 
 app = FastAPI(title="PulseGuard AIOps Assistant", version="0.1.0", lifespan=lifespan)
+app.mount("/metrics", make_asgi_app())
 
 
 @app.get("/healthz")
@@ -80,31 +86,49 @@ async def home() -> str:
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
     assert assistant is not None
-    response = await assistant.chat(
-        session_id=request.session_id,
-        message=request.message,
-        routing_mode=request.routing_mode,
-        max_tool_rounds=request.max_tool_rounds,
-    )
-    response.session_id = request.session_id
-    return response
+    started_at = time.perf_counter()
+    outcome = "success"
+    model = settings.selected_model(request.routing_mode, request.message)
+    try:
+        response = await assistant.chat(
+            session_id=request.session_id,
+            message=request.message,
+            routing_mode=request.routing_mode,
+            max_tool_rounds=request.max_tool_rounds,
+        )
+        response.session_id = request.session_id
+        return response
+    except Exception:
+        outcome = "error"
+        raise
+    finally:
+        observe_request("/chat", model, outcome, time.perf_counter() - started_at)
 
 
 @app.post("/triage", response_model=ChatResponse)
 async def triage_alert(request: AlertTriageRequest) -> ChatResponse:
     assert assistant is not None
+    started_at = time.perf_counter()
+    outcome = "success"
     message = (
         f"Investigate alert {request.alert_name} for service {request.service}. "
         f"Summary: {request.summary}. Signal hint: {request.signal_hint}"
     )
-    response = await assistant.chat(
-        session_id=request.session_id,
-        message=message,
-        routing_mode="deep",
-        max_tool_rounds=4,
-    )
-    response.session_id = request.session_id
-    return response
+    model = settings.selected_model("deep", message)
+    try:
+        response = await assistant.chat(
+            session_id=request.session_id,
+            message=message,
+            routing_mode="deep",
+            max_tool_rounds=4,
+        )
+        response.session_id = request.session_id
+        return response
+    except Exception:
+        outcome = "error"
+        raise
+    finally:
+        observe_request("/triage", model, outcome, time.perf_counter() - started_at)
 
 
 @app.get("/sessions/{session_id}", response_model=SessionSnapshot)

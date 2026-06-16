@@ -126,6 +126,40 @@ variable "grafana_base_url" {
   default     = "http://grafana.observability.svc.cluster.local"
 }
 
+variable "otel_exporter_otlp_endpoint" {
+  type        = string
+  description = "OTLP HTTP endpoint used by the assistant for GenAI traces."
+  default     = ""
+}
+
+variable "eval_results_path" {
+  type        = string
+  description = "Path to the latest eval results JSON inside the assistant container."
+  default     = "/app/evals/latest-results.json"
+}
+
+variable "model_pricing_usd_per_million" {
+  type = map(object({
+    input  = number
+    output = number
+  }))
+  description = "Per-model token pricing used for cost estimation."
+  default = {
+    default = {
+      input  = 0.15
+      output = 0.6
+    }
+    "openai/gpt-4o-mini" = {
+      input  = 0.15
+      output = 0.6
+    }
+    "anthropic/claude-3.5-haiku" = {
+      input  = 0.8
+      output = 4.0
+    }
+  }
+}
+
 variable "enable_redis_memory" {
   type        = bool
   description = "Provision Memorystore Redis and use it for short-term session memory."

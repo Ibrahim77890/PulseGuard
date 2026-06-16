@@ -8,6 +8,7 @@ import httpx
 
 from app.config import settings
 from app.knowledge import search_knowledge
+from app.observability import TimedOperation, observe_retrieval, observe_tool_call
 
 
 logger = logging.getLogger("pulseguard.aiops.tools")
@@ -44,11 +45,16 @@ class ReadOnlyTools:
         self.timeout = httpx.Timeout(settings.http_timeout_seconds)
 
     async def query_prometheus(self, session_id: str, promql: str) -> dict[str, Any]:
+        timer = TimedOperation()
         url = f"{settings.prometheus_base_url.rstrip('/')}/api/v1/query"
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            response = await client.get(url, params={"query": promql})
-            response.raise_for_status()
-            payload = response.json()
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.get(url, params={"query": promql})
+                response.raise_for_status()
+                payload = response.json()
+        except Exception:
+            observe_tool_call("query_prometheus", "error", timer.elapsed)
+            raise
 
         result = {
             "status": payload.get("status"),
@@ -56,9 +62,11 @@ class ReadOnlyTools:
             "result": payload.get("data", {}).get("result", [])[:10],
         }
         _tool_log("query_prometheus", {"promql": promql}, f"{len(result['result'])} series", session_id)
+        observe_tool_call("query_prometheus", "success", timer.elapsed)
         return result
 
     async def query_loki(self, session_id: str, logql: str, limit: int = 20) -> dict[str, Any]:
+        timer = TimedOperation()
         end = datetime.now(UTC)
         start = end - timedelta(minutes=30)
         url = f"{settings.loki_base_url.rstrip('/')}/loki/api/v1/query_range"
@@ -69,10 +77,14 @@ class ReadOnlyTools:
             "end": str(int(end.timestamp() * 1_000_000_000)),
         }
 
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
-            payload = response.json()
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.get(url, params=params)
+                response.raise_for_status()
+                payload = response.json()
+        except Exception:
+            observe_tool_call("query_loki", "error", timer.elapsed)
+            raise
 
         result = {
             "status": payload.get("status"),
@@ -80,20 +92,29 @@ class ReadOnlyTools:
             "result": payload.get("data", {}).get("result", [])[:10],
         }
         _tool_log("query_loki", {"logql": logql, "limit": limit}, f"{len(result['result'])} streams", session_id)
+        observe_tool_call("query_loki", "success", timer.elapsed)
         return result
 
     async def fetch_grafana_status(self, session_id: str) -> dict[str, Any]:
-        links = _dashboard_links()
-        result = {
-            "dashboards": links,
-            "recommended_start": links["error_budget"],
-        }
-        _tool_log("fetch_grafana_status", {}, "returned dashboard links", session_id)
-        return result
+        timer = TimedOperation()
+        try:
+            links = _dashboard_links()
+            result = {
+                "dashboards": links,
+                "recommended_start": links["error_budget"],
+            }
+            _tool_log("fetch_grafana_status", {}, "returned dashboard links", session_id)
+            observe_tool_call("fetch_grafana_status", "success", timer.elapsed)
+            return result
+        except Exception:
+            observe_tool_call("fetch_grafana_status", "error", timer.elapsed)
+            raise
 
     async def fetch_runbook(self, session_id: str, runbook_name: str) -> dict[str, Any]:
+        timer = TimedOperation()
         path = Path(settings.runbooks_root) / runbook_name
         if not path.exists():
+            observe_tool_call("fetch_runbook", "error", timer.elapsed)
             raise FileNotFoundError(f"Runbook {runbook_name} was not found.")
 
         content = path.read_text(encoding="utf-8")
@@ -103,24 +124,33 @@ class ReadOnlyTools:
             "content": content[:6000],
         }
         _tool_log("fetch_runbook", {"runbook_name": runbook_name}, result["title"], session_id)
+        observe_tool_call("fetch_runbook", "success", timer.elapsed)
         return result
 
     async def search_incident_memory(self, session_id: str, query: str) -> dict[str, Any]:
-        matches = search_knowledge(query, limit=3)
-        result = {
-            "documents": [
-                {
-                    "title": document.title,
-                    "source": document.source,
-                    "category": document.category,
-                    "score": round(score, 4),
-                    "excerpt": document.content[:500],
-                }
-                for document, score in matches
-            ]
-        }
-        _tool_log("search_incident_memory", {"query": query}, f"{len(result['documents'])} docs", session_id)
-        return result
+        timer = TimedOperation()
+        try:
+            matches = search_knowledge(query, limit=3)
+            result = {
+                "documents": [
+                    {
+                        "title": document.title,
+                        "source": document.source,
+                        "category": document.category,
+                        "score": round(score, 4),
+                        "excerpt": document.content[:500],
+                    }
+                    for document, score in matches
+                ]
+            }
+            for document, _ in matches:
+                observe_retrieval(document.category, 1)
+            _tool_log("search_incident_memory", {"query": query}, f"{len(result['documents'])} docs", session_id)
+            observe_tool_call("search_incident_memory", "success", timer.elapsed)
+            return result
+        except Exception:
+            observe_tool_call("search_incident_memory", "error", timer.elapsed)
+            raise
 
 
 TOOL_DEFINITIONS = [
