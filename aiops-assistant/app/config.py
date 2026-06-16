@@ -3,6 +3,14 @@ import json
 import os
 
 
+def _env_flag(name: str, default: str) -> bool:
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_csv(name: str, default: str) -> list[str]:
+    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+
 @dataclass
 class Settings:
     service_name: str = os.getenv("SERVICE_NAME", "pulseguard-aiops-assistant")
@@ -28,6 +36,21 @@ class Settings:
     postmortems_root: str = os.getenv("POSTMORTEMS_ROOT", "/app/docs/postmortems")
     eval_results_path: str = os.getenv("EVAL_RESULTS_PATH", "/app/evals/latest-results.json")
     http_timeout_seconds: int = int(os.getenv("HTTP_TIMEOUT_SECONDS", "15"))
+    enable_prompt_guardrails: bool = _env_flag("ENABLE_PROMPT_GUARDRAILS", "true")
+    ai_security_audit_logging: bool = _env_flag("AI_SECURITY_AUDIT_LOGGING", "true")
+    allowed_outbound_hosts: list[str] = field(
+        default_factory=lambda: _env_csv(
+            "ALLOWED_OUTBOUND_HOSTS",
+            ",".join(
+                [
+                    "openrouter.ai",
+                    "kube-prometheus-stack-prometheus.observability.svc.cluster.local",
+                    "loki-gateway.observability.svc.cluster.local",
+                    "grafana.observability.svc.cluster.local",
+                ]
+            ),
+        )
+    )
     model_pricing_usd_per_million: dict = field(
         default_factory=lambda: json.loads(
             os.getenv(

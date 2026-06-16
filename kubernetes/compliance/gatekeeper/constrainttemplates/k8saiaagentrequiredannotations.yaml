@@ -1,0 +1,32 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8saiaagentrequiredannotations
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sAIAgentRequiredAnnotations
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            annotations:
+              type: array
+              items:
+                type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8saiaagentrequiredannotations
+
+        is_ai_agent {
+          input.review.object.spec.template.metadata.labels["workload-type"] == "ai-agent"
+        }
+
+        violation[{"msg": msg}] {
+          is_ai_agent
+          required := input.parameters.annotations[_]
+          not input.review.object.spec.template.metadata.annotations[required]
+          msg := sprintf("AI agent workload is missing required annotation %q", [required])
+        }

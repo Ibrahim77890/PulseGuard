@@ -3,7 +3,7 @@ locals {
     environment = var.environment
     owner       = var.owner
     project     = "pulseguard"
-    phase       = "09"
+    phase       = "10"
   }
 
   grafana_dashboards = {
@@ -295,6 +295,9 @@ module "aiops_assistant" {
   loki_base_url                   = var.aiops_loki_base_url
   grafana_base_url                = var.aiops_grafana_base_url
   otel_exporter_otlp_endpoint     = var.aiops_otel_exporter_otlp_endpoint
+  allowed_outbound_hosts          = var.aiops_allowed_outbound_hosts
+  enable_prompt_guardrails        = var.aiops_enable_prompt_guardrails
+  ai_security_audit_logging       = var.aiops_security_audit_logging
   eval_results_path               = var.aiops_eval_results_path
   model_pricing_usd_per_million   = var.aiops_model_pricing_usd_per_million
   enable_redis_memory             = var.aiops_enable_redis_memory

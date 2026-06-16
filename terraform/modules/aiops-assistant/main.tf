@@ -145,6 +145,21 @@ resource "google_cloud_run_v2_service" "aiops" {
       }
 
       env {
+        name  = "ALLOWED_OUTBOUND_HOSTS"
+        value = join(",", var.allowed_outbound_hosts)
+      }
+
+      env {
+        name  = "ENABLE_PROMPT_GUARDRAILS"
+        value = tostring(var.enable_prompt_guardrails)
+      }
+
+      env {
+        name  = "AI_SECURITY_AUDIT_LOGGING"
+        value = tostring(var.ai_security_audit_logging)
+      }
+
+      env {
         name  = "EVAL_RESULTS_PATH"
         value = var.eval_results_path
       }

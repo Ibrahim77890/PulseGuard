@@ -2,7 +2,7 @@
   "cases_run": 15,
   "quality_score_percent": 97.78,
   "tool_correctness_percent": 93.67,
-  "average_latency_ms": 0.3,
+  "average_latency_ms": 0.87,
   "average_cost_usd": 0.0,
   "routing_mode": "heuristic"
 }

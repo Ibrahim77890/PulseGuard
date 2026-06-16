@@ -9,6 +9,12 @@ import httpx
 from app.config import settings
 from app.knowledge import search_knowledge
 from app.observability import TimedOperation, observe_retrieval, observe_tool_call
+from app.security import (
+    audit_security_event,
+    enforce_outbound_host_allowlist,
+    enforce_repo_path_boundary,
+    sanitize_tool_payload,
+)
 
 
 logger = logging.getLogger("pulseguard.aiops.tools")
@@ -47,6 +53,7 @@ class ReadOnlyTools:
     async def query_prometheus(self, session_id: str, promql: str) -> dict[str, Any]:
         timer = TimedOperation()
         url = f"{settings.prometheus_base_url.rstrip('/')}/api/v1/query"
+        enforce_outbound_host_allowlist(url, session_id, "query_prometheus")
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.get(url, params={"query": promql})
@@ -61,6 +68,7 @@ class ReadOnlyTools:
             "result_type": payload.get("data", {}).get("resultType"),
             "result": payload.get("data", {}).get("result", [])[:10],
         }
+        result = sanitize_tool_payload(result)
         _tool_log("query_prometheus", {"promql": promql}, f"{len(result['result'])} series", session_id)
         observe_tool_call("query_prometheus", "success", timer.elapsed)
         return result
@@ -70,6 +78,7 @@ class ReadOnlyTools:
         end = datetime.now(UTC)
         start = end - timedelta(minutes=30)
         url = f"{settings.loki_base_url.rstrip('/')}/loki/api/v1/query_range"
+        enforce_outbound_host_allowlist(url, session_id, "query_loki")
         params = {
             "query": logql,
             "limit": limit,
@@ -91,6 +100,7 @@ class ReadOnlyTools:
             "result_type": payload.get("data", {}).get("resultType"),
             "result": payload.get("data", {}).get("result", [])[:10],
         }
+        result = sanitize_tool_payload(result)
         _tool_log("query_loki", {"logql": logql, "limit": limit}, f"{len(result['result'])} streams", session_id)
         observe_tool_call("query_loki", "success", timer.elapsed)
         return result
@@ -99,10 +109,12 @@ class ReadOnlyTools:
         timer = TimedOperation()
         try:
             links = _dashboard_links()
+            enforce_outbound_host_allowlist(settings.grafana_base_url, session_id, "fetch_grafana_status")
             result = {
                 "dashboards": links,
                 "recommended_start": links["error_budget"],
             }
+            result = sanitize_tool_payload(result)
             _tool_log("fetch_grafana_status", {}, "returned dashboard links", session_id)
             observe_tool_call("fetch_grafana_status", "success", timer.elapsed)
             return result
@@ -112,7 +124,9 @@ class ReadOnlyTools:
 
     async def fetch_runbook(self, session_id: str, runbook_name: str) -> dict[str, Any]:
         timer = TimedOperation()
-        path = Path(settings.runbooks_root) / runbook_name
+        root = Path(settings.runbooks_root)
+        path = root / runbook_name
+        enforce_repo_path_boundary(path, root, session_id, "fetch_runbook")
         if not path.exists():
             observe_tool_call("fetch_runbook", "error", timer.elapsed)
             raise FileNotFoundError(f"Runbook {runbook_name} was not found.")
@@ -123,6 +137,7 @@ class ReadOnlyTools:
             "source": str(path),
             "content": content[:6000],
         }
+        result = sanitize_tool_payload(result)
         _tool_log("fetch_runbook", {"runbook_name": runbook_name}, result["title"], session_id)
         observe_tool_call("fetch_runbook", "success", timer.elapsed)
         return result
@@ -143,9 +158,17 @@ class ReadOnlyTools:
                     for document, score in matches
                 ]
             }
+            result = sanitize_tool_payload(result)
             for document, _ in matches:
                 observe_retrieval(document.category, 1)
             _tool_log("search_incident_memory", {"query": query}, f"{len(result['documents'])} docs", session_id)
+            audit_security_event(
+                category="aiops-action-audit",
+                action="search_incident_memory",
+                session_id=session_id,
+                outcome="success",
+                details={"documents_returned": len(result["documents"])},
+            )
             observe_tool_call("search_incident_memory", "success", timer.elapsed)
             return result
         except Exception:

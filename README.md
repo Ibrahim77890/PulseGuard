@@ -1,8 +1,8 @@
 # PulseGuard
 
-PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 09: the secure platform foundation, observability stack, SLO engineering layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, an AIOps assistant layer, and LLM plus agent observability.
+PulseGuard is a portfolio project for production observability, security, incident engineering, and AIOps on GCP. This repository currently implements Phase 01 through Phase 10: the secure platform foundation, observability stack, SLO engineering layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, an AIOps assistant layer, LLM plus agent observability, and AI security controls.
 
-## Phase 01-09 scope
+## Phase 01-10 scope
 
 - GKE Autopilot cluster with private nodes and private control plane endpoint
 - Workload Identity per namespace: `frontend`, `backend`, `data`
@@ -24,6 +24,7 @@ PulseGuard is a portfolio project for production observability, security, incide
 - Gatekeeper policy enforcement, OpenCost scaffolding, billing export dataset setup, and FinOps queries
 - Cloud Run AIOps assistant with read-only tool calling, session memory, and runbook/postmortem RAG
 - OpenTelemetry GenAI spans, agent cost and latency metrics, eval harnesses, and agent SLO signals
+- Prompt-injection guardrails, outbound allowlisting, AI-agent admission policies, and AI-focused runtime detections
 
 ## Repository layout
 
@@ -36,6 +37,7 @@ PulseGuard is a portfolio project for production observability, security, incide
 - [PHASE_07.md](/e:/pulseguard/PHASE_07.md)
 - [PHASE_08.md](/e:/pulseguard/PHASE_08.md)
 - [PHASE_09.md](/e:/pulseguard/PHASE_09.md)
+- [PHASE_10.md](/e:/pulseguard/PHASE_10.md)
 - [terraform/environments/dev/main.tf](/e:/pulseguard/terraform/environments/dev/main.tf)
 - [terraform/modules/gke-autopilot/main.tf](/e:/pulseguard/terraform/modules/gke-autopilot/main.tf)
 - [terraform/modules/workload-identity/main.tf](/e:/pulseguard/terraform/modules/workload-identity/main.tf)
@@ -58,4 +60,4 @@ Terraform manages the workload identity KSAs so the manifest overlay intentional
 
 ## Validation
 
-Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md), [docs/phase-05-validation-checklist.md](/e:/pulseguard/docs/phase-05-validation-checklist.md), [docs/phase-06-validation-checklist.md](/e:/pulseguard/docs/phase-06-validation-checklist.md), [docs/phase-07-validation-checklist.md](/e:/pulseguard/docs/phase-07-validation-checklist.md), [docs/phase-08-validation-checklist.md](/e:/pulseguard/docs/phase-08-validation-checklist.md), and [docs/phase-09-validation-checklist.md](/e:/pulseguard/docs/phase-09-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, the AIOps assistant, and LLM plus agent observability are complete.
+Use the checklists in [docs/validation-checklist.md](/e:/pulseguard/docs/validation-checklist.md), [docs/phase-02-validation-checklist.md](/e:/pulseguard/docs/phase-02-validation-checklist.md), [docs/phase-03-validation-checklist.md](/e:/pulseguard/docs/phase-03-validation-checklist.md), [docs/phase-04-validation-checklist.md](/e:/pulseguard/docs/phase-04-validation-checklist.md), [docs/phase-05-validation-checklist.md](/e:/pulseguard/docs/phase-05-validation-checklist.md), [docs/phase-06-validation-checklist.md](/e:/pulseguard/docs/phase-06-validation-checklist.md), [docs/phase-07-validation-checklist.md](/e:/pulseguard/docs/phase-07-validation-checklist.md), [docs/phase-08-validation-checklist.md](/e:/pulseguard/docs/phase-08-validation-checklist.md), [docs/phase-09-validation-checklist.md](/e:/pulseguard/docs/phase-09-validation-checklist.md), and [docs/phase-10-validation-checklist.md](/e:/pulseguard/docs/phase-10-validation-checklist.md) to confirm the foundation, observability stack, SLO layer, shift-left security pipeline, runtime security layer, incident-engineering assets, compliance plus cost-observability controls, the AIOps assistant, LLM plus agent observability, and AI security controls are complete.

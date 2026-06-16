@@ -6,6 +6,9 @@ falcosidekick:
 
 customRules:
   pulseguard-rules.yaml: |-
+    - macro: pulseguard_ai_agent_container
+      condition: container and (container.name contains "aiops-assistant" or container.image.repository contains "aiops-assistant")
+
     - rule: PulseGuard Shell Spawned In Container
       desc: Detect shell execution inside a container
       condition: spawned_process and container and shell_procs
@@ -41,3 +44,21 @@ customRules:
         (proc=%proc.name fd=%fd.name container=%container.name image=%container.image.repository)
       priority: NOTICE
       tags: [pulseguard, runtime, network]
+
+    - rule: PulseGuard AI Agent Accessed Service Account Material
+      desc: Detect reads of service-account credentials by the AI assistant workload
+      condition: pulseguard_ai_agent_container and open_read and fd.name startswith /var/run/secrets/
+      output: >
+        PulseGuard AI agent accessed credential material
+        (file=%fd.name command=%proc.cmdline container=%container.name image=%container.image.repository)
+      priority: ERROR
+      tags: [pulseguard, runtime, ai-security, credentials]
+
+    - rule: PulseGuard AI Agent Unexpected Outbound Connection
+      desc: Detect outbound connections from the AI assistant workload for runtime investigation
+      condition: pulseguard_ai_agent_container and outbound
+      output: >
+        PulseGuard AI agent outbound connection observed
+        (proc=%proc.name fd=%fd.name container=%container.name image=%container.image.repository)
+      priority: WARNING
+      tags: [pulseguard, runtime, ai-security, network]

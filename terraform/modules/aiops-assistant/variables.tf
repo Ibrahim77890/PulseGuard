@@ -38,7 +38,7 @@ variable "aiops_service_account_id" {
 variable "aiops_ingress" {
   type        = string
   description = "Cloud Run ingress setting."
-  default     = "INGRESS_TRAFFIC_ALL"
+  default     = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 }
 
 variable "aiops_timeout_seconds" {
@@ -74,7 +74,7 @@ variable "aiops_memory" {
 variable "allow_unauthenticated" {
   type        = bool
   description = "Allow unauthenticated access to the AIOps assistant."
-  default     = true
+  default     = false
 }
 
 variable "openrouter_api_key_secret_name" {
@@ -130,6 +130,29 @@ variable "otel_exporter_otlp_endpoint" {
   type        = string
   description = "OTLP HTTP endpoint used by the assistant for GenAI traces."
   default     = ""
+}
+
+variable "allowed_outbound_hosts" {
+  type        = list(string)
+  description = "Outbound host allowlist enforced by the assistant."
+  default = [
+    "openrouter.ai",
+    "kube-prometheus-stack-prometheus.observability.svc.cluster.local",
+    "loki-gateway.observability.svc.cluster.local",
+    "grafana.observability.svc.cluster.local",
+  ]
+}
+
+variable "enable_prompt_guardrails" {
+  type        = bool
+  description = "Enable prompt-injection detection and untrusted-content sanitization."
+  default     = true
+}
+
+variable "ai_security_audit_logging" {
+  type        = bool
+  description = "Emit structured security audit logs from the assistant."
+  default     = true
 }
 
 variable "eval_results_path" {
